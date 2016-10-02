@@ -1,0 +1,47 @@
+--- a/configure	2015-01-21 23:48:23.763333326 -0500
++++ b/configure	2015-01-21 23:52:30.326666664 -0500
+@@ -300,6 +300,7 @@
+ libusb=""
+ usb_redir=""
+ glx=""
++stubdom="no"
+ zlib="yes"
+ lzo="no"
+ snappy="no"
+@@ -1021,6 +1022,8 @@
+   ;;
+   --enable-usb-redir) usb_redir="yes"
+   ;;
++  --enable-stubdom) stubdom="yes"
++  ;;
+   --disable-zlib-test) zlib="no"
+   ;;
+   --enable-lzo) lzo="yes"
+@@ -1329,6 +1332,7 @@
+   --enable-usb-redir       enable usb network redirection support
+   --enable-lzo             enable the support of lzo compression library
+   --enable-snappy          enable the support of snappy compression library
++  --enable-stubdom         enable building the ioemu-stubdom
+   --disable-guest-agent    disable building of the QEMU Guest Agent
+   --enable-guest-agent     enable building of the QEMU Guest Agent
+   --with-vss-sdk=SDK-path  enable Windows VSS support in QEMU Guest Agent
+@@ -4122,6 +4126,7 @@
+     echo "Target Sparc Arch $sparc_cpu"
+ fi
+ echo "xen support       $xen"
++echo "stubdom support   $stubdom"
+ echo "brlapi support    $brlapi"
+ echo "bluez  support    $bluez"
+ echo "Documentation     $docs"
+@@ -4553,6 +4558,11 @@
+   echo "RBD_LIBS=$rbd_libs" >> $config_host_mak
+ fi
+ 
++# stubdom support
++if test "$stubdom" = "yes"; then
++  echo "CONFIG_STUBDOM=y" >> $config_host_mak
++fi
++
+ echo "CONFIG_COROUTINE_BACKEND=$coroutine" >> $config_host_mak
+ if test "$coroutine_pool" = "yes" ; then
+   echo "CONFIG_COROUTINE_POOL=1" >> $config_host_mak

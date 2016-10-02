@@ -1,0 +1,12 @@
+--- a/xen-common.c	2015-01-25 20:42:36.329999998 -0500
++++ b/xen-common.c	2015-01-25 20:43:20.346666663 -0500
+@@ -92,7 +92,8 @@
+         exit(1);
+     }
+ 
+-    snprintf(path, sizeof (path), "device-model/%u/state", xen_domid);
++    snprintf(path, sizeof (path),
++             "/local/domain/0/device-model/%u/state", xen_domid);
+     if (!xs_write(xs, XBT_NULL, path, state, strlen(state))) {
+         fprintf(stderr, "error recording dm state\n");
+         exit(1);
