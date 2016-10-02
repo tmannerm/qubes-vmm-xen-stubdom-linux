@@ -1,5 +1,7 @@
 include Makefile.vars
 
+.PHONY: all install clean
+
 VMLINUZ=build/linux/arch/x86/boot/bzImage
 ROOTFS_IMG=build/rootfs/stubdom-disk.img
 

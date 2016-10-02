@@ -1,6 +1,8 @@
 .DEFAULT_GOAL = get-sources
 .SECONDEXPANSION:
 
+.PHONY: get-sources verify-sources clean clean-sources
+
 SHELL := bash
 
 include Makefile.vars
