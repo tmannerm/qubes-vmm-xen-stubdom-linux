@@ -1,6 +1,6 @@
---- a/xen-hvm.c	2015-01-21 22:32:42.999999995 -0500
-+++ b/xen-hvm.c	2015-01-21 22:35:17.633333330 -0500
-@@ -1008,6 +1008,10 @@
+--- a/xen-hvm.c
++++ b/xen-hvm.c
+@@ -1201,6 +1201,10 @@
      state->wakeup.notify = xen_wakeup_notifier;
      qemu_register_wakeup_notifier(&state->wakeup);
  
@@ -8,18 +8,18 @@
 +        xc_set_hvm_param(xen_xc, xen_domid, HVM_PARAM_DM_DOMAIN, DOMID_SELF);
 +    }
 +
-     xc_get_hvm_param(xen_xc, xen_domid, HVM_PARAM_IOREQ_PFN, &ioreq_pfn);
-     DPRINTF("shared page at pfn %lx\n", ioreq_pfn);
-     state->shared_page = xc_map_foreign_range(xen_xc, xen_domid, XC_PAGE_SIZE,
-@@ -1063,6 +1067,7 @@
-     memory_listener_register(&state->memory_listener, &address_space_memory);
-     state->log_for_dirtybit = NULL;
+     rc = xen_get_ioreq_server_info(xen_xc, xen_domid, state->ioservid,
+                                    &ioreq_pfn, &bufioreq_pfn,
+                                    &bufioreq_evtchn);
+@@ -1289,6 +1293,7 @@
+     state->device_listener = xen_device_listener;
+     device_listener_register(&state->device_listener);
  
 +#ifndef CONFIG_STUBDOM
      /* Initialize backend core & drivers */
      if (xen_be_init() != 0) {
          fprintf(stderr, "%s: xen backend core setup failed\n", __FUNCTION__);
-@@ -1071,6 +1076,14 @@
+@@ -1297,6 +1302,14 @@
      xen_be_register("console", &xen_console_ops);
      xen_be_register("vkbd", &xen_kbdmouse_ops);
      xen_be_register("qdisk", &xen_blkdev_ops);

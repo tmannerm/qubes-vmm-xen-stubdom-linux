@@ -1,0 +1,4 @@
+qemu-configure.patch
+qemu-xen-common.patch
+qemu-xen-h.patch
+qemu-xen-hvm.patch
