@@ -27,7 +27,7 @@ stubdom.
 
 
 %build
-make -f Makefile.stubdom
+make -f Makefile.stubdom %{?_smp_mflags}
 
 
 %install
