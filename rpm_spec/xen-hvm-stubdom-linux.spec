@@ -12,6 +12,8 @@ Group: System
 License: GPL
 URL: https://www.qubes-os.org/
 
+BuildRequires: quilt
+
 # genext2fs
 BuildRequires: autoconf
 BuildRequires: automake
