@@ -4,3 +4,7 @@
 /linux-*.tar.xz
 /linux-*/
 /vmlinuz-stubdom
+/initramfs
+/stubdom-disk.img
+/dracut-???*
+/genext2fs-*

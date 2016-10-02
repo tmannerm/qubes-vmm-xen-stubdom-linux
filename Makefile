@@ -12,7 +12,19 @@ LINUX_V=linux-3.17.8
 VMLINUZ=$(LINUX_V)/arch/x86/boot/bzImage
 LINUX_URL=ftp://ftp.kernel.org/pub/linux/kernel/v3.x/$(LINUX_V).tar.xz
 
-all: $(VMLINUZ)
+DRACUT_URL="http://www.kernel.org/pub/linux/utils/boot/dracut"
+DRACUT_V=dracut-033
+
+GENEXT2FS_V = 1.4.1
+GENEXT2FS_URL="http://sourceforge.net/projects/genext2fs/files/genext2fs/$(GENEXT2FS_V)/genext2fs-$(GENEXT2FS_V).tar.gz/download"
+
+# Stubdom disk content
+STUBDOM_DISK_FILE= \
+  qemu-build/i386-softmmu/qemu-system-i386 \
+  extra/initscript \
+  extra/qemu-ifup
+
+all: $(VMLINUZ) stubdom-disk.img
 
 qemu-build/Makefile:
 	export GIT=$(GIT); \
@@ -73,5 +85,34 @@ $(LINUX_V)/Makefile $(LINUX_V)/.config: $(LINUX_V).tar.xz
 $(VMLINUZ): $(LINUX_V)/.config
 	$(MAKE) -C $(LINUX_V)
 
-install: $(VMLINUZ)
+$(DRACUT_V).tar.xz:
+	$(FETCHER) $@ $(DRACUT_URL)/$@
+
+DRACUT_INSTALL=$(CURDIR)/$(DRACUT_V)/dracut-install
+$(DRACUT_INSTALL): $(DRACUT_V).tar.xz
+	tar xf $<
+	$(MAKE) -C $(DRACUT_V) dracut-install
+
+GENEXT2FS = $(shell which genext2fs 2>/dev/null)
+ifeq ($(GENEXT2FS),)
+GENEXT2FS = $(CURDIR)/genext2fs-$(GENEXT2FS_V)/genext2fs
+endif
+
+genext2fs-$(GENEXT2FS_V).tar.gz:
+	$(FETCHER) $@ $(GENEXT2FS_URL)
+$(CURDIR)/genext2fs-$(GENEXT2FS_V)/genext2fs: genext2fs-$(GENEXT2FS_V).tar.gz
+	tar xf $<
+	cd genext2fs-$(GENEXT2FS_V) && ./configure
+	$(MAKE) -C genext2fs-$(GENEXT2FS_V)
+
+gen-stubdom-disk.sh: $(DRACUT_INSTALL) $(GENEXT2FS)
+
+export DRACUT_INSTALL
+export GENEXT2FS
+stubdom-disk.img: gen-stubdom-disk.sh $(STUBDOM_DISK_FILE)
+	env -u MAKELEVEL -u MAKEFLAGS -u MFLAGS ./$<
+	chmod a-w $@
+
+install: $(VMLINUZ) stubdom-disk.img
 	cp -f $(VMLINUZ) $(DESTDIR)/usr/local/lib/xen/boot/vmlinuz-stubdom
+	cp -f stubdom-disk.img $(DESTDIR)/usr/local/lib/xen/boot/
