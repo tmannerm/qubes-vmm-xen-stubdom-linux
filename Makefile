@@ -46,3 +46,9 @@ get-sources: $(ALL_FILES)
 
 verify-sources:
 	@true
+
+clean:
+	$(MAKE) -f Makefile.stubdom clean
+
+clean-sources:
+	rm -rf dl

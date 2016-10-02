@@ -102,3 +102,6 @@ $(ROOTFS_IMG): rootfs/gen $(STUBDOM_DISK_FILE)
 install: $(VMLINUZ) $(ROOTFS_IMG)
 	install -D -m 444 $(VMLINUZ) $(DESTDIR)/usr/lib/xen/boot/vmlinuz-stubdom
 	install -m 444 $(ROOTFS_IMG) $(DESTDIR)/usr/lib/xen/boot/
+
+clean:
+	rm -rf build
