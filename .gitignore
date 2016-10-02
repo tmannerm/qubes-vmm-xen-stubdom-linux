@@ -1,11 +1,3 @@
 /dl/
-/qemu-build/
-/qemu-remote
-/qemu-remote-remote/
-/linux-*.tar.xz
-/linux-*/
-/vmlinuz-stubdom
-/initramfs
-/stubdom-disk.img
-/dracut-???*
-/genext2fs-*
+/build/
+*.swp

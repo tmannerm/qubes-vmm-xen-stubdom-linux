@@ -3,9 +3,7 @@
 
 SHELL := bash
 
-XEN_VERSION := 4.6.1
-GENEXT2FS_VERSION := 1.4.1
-LINUX_VERSION := 3.17.8
+include Makefile.vars
 
 UNTRUSTED_SUFF := .UNTRUSTED
 

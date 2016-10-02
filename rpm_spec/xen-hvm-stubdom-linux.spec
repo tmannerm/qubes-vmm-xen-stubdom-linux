@@ -12,8 +12,13 @@ Group: System
 License: GPL
 URL: https://www.qubes-os.org/
 
+# genext2fs
 BuildRequires: autoconf
 BuildRequires: automake
+
+# QEMU
+BuildRequires: python
+
 #TODO: BuildRequires
 
 %description
