@@ -7,7 +7,12 @@ include $(XEN_ROOT)/Config.mk
 QEMU_TREE=git://xenbits.xen.org/qemu-upstream-4.5-testing.git
 QEMU_BRANCH=qemu-xen-4.5.0
 
-all:
+# Linux Kernel version used
+LINUX_V=linux-3.17.8
+VMLINUZ=$(LINUX_V)/arch/x86/boot/bzImage
+LINUX_URL=ftp://ftp.kernel.org/pub/linux/kernel/v3.x/$(LINUX_V).tar.xz
+
+all: $(VMLINUZ)
 
 qemu-build/Makefile:
 	export GIT=$(GIT); \
@@ -53,3 +58,20 @@ qemu-build/Makefile:
 qemu-build: qemu-build/Makefile
 qemu-build/i386-softmmu/qemu-system-i386: qemu-build
 	$(MAKE) -C qemu-build
+
+$(LINUX_V).tar.xz:
+	$(FETCHER) $@ $(LINUX_URL)
+
+$(LINUX_V)/Makefile $(LINUX_V)/.config: $(LINUX_V).tar.xz
+	rm -rf $(LINUX_V)
+	tar xf $(LINUX_V).tar.xz
+	# Temp patches
+	patch -d $(LINUX_V) -p1 -i ../0002-fix-remap_area_mfn_pte_fn.patch
+	patch -d $(LINUX_V) -p1 -i ../0001-hvc_xen-Don-t-write-in-the-type-node-in-xenstore.patch
+	cp stubdom-linux-config-64b $(LINUX_V)/.config
+
+$(VMLINUZ): $(LINUX_V)/.config
+	$(MAKE) -C $(LINUX_V)
+
+install: $(VMLINUZ)
+	cp -f $(VMLINUZ) $(DESTDIR)/usr/local/lib/xen/boot/vmlinuz-stubdom

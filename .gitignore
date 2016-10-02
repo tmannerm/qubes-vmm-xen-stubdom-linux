@@ -1,3 +1,6 @@
 /qemu-build/
 /qemu-remote
 /qemu-remote-remote/
+/linux-*.tar.xz
+/linux-*/
+/vmlinuz-stubdom
