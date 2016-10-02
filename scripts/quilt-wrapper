@@ -13,7 +13,7 @@ while [ $# -gt 0 ]; do
             ;;
         -l)
             cd "$2"
-            quilt series | while p="$(line)"; do echo "$2/$p"; done
+            quilt series | while IFS= read -r p; do echo "$2/$p"; done
             exit $?
             ;;
         [^-]*)
