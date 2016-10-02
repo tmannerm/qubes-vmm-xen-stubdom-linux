@@ -1,0 +1,35 @@
+#!/bin/bash
+
+declare -a q_args
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -C)
+            cd "$2"
+            shift
+            ;;
+        -.)
+            export QUILT_PATCHES=.patches
+            ;;
+        -l)
+            cd "$2"
+            quilt series | while p="$(line)"; do echo "$2/$p"; done
+            exit $?
+            ;;
+        [^-]*)
+            q_args+=("$@")
+            break
+            ;;
+        *)
+            q_args+=("$1")
+            ;;
+    esac
+    shift
+done
+
+quilt "${q_args[@]}"
+rc=$?
+if [ $rc -eq 2 ]; then
+    rc=0
+fi
+exit $rc

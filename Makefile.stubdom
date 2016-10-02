@@ -9,17 +9,26 @@ STUBDOM_DISK_FILE= \
   rootfs/init \
   rootfs/qemu-ifup
 
+Q=scripts/quilt-wrapper
+
 all: $(VMLINUZ) $(ROOTFS_IMG)
 
-QEMU_PATCHES := $(addprefix qemu/patches/,$(shell cat qemu/patches/series))
+QEMU_PATCHES := $(shell $Q -l qemu)
 
-build/qemu/i386-softmmu/qemu-system-i386: dl/xen-$(XEN_VERSION).tar.gz $(QEMU_PATCHES)
+build/qemu/.extracted: dl/xen-$(XEN_VERSION).tar.gz
 	rm -rf build/qemu
 	mkdir -p build/qemu
 	tar -C build/qemu --strip-components=3 --no-wildcards-match-slash --wildcards -xf $< '*/tools/qemu-xen'
-	for p in $(QEMU_PATCHES); do\
-		patch -d build/qemu -p1 <$$p || exit 1;\
-	done
+	touch $@
+
+build/qemu/.patched: build/qemu/.extracted qemu/patches/series $(QEMU_PATCHES)
+	$Q -C build/qemu -. pop -a
+	rm -rf build/qemu/.patches
+	cp -a qemu/patches build/qemu/.patches
+	$Q -C build/qemu -. push -a
+	touch $@
+
+build/qemu/config.status: build/qemu/.patched
 	cd build/qemu && ./configure \
 		--target-list=i386-softmmu \
 		--enable-xen \
@@ -44,18 +53,29 @@ build/qemu/i386-softmmu/qemu-system-i386: dl/xen-$(XEN_VERSION).tar.gz $(QEMU_PA
 		--disable-curses \
 		--prefix=
 		#--enable-stubdom \#
+
+build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status
 	$(MAKE) -C build/qemu
 
-LINUX_PATCHES := $(addprefix linux/patches/,$(shell cat linux/patches/series))
+LINUX_PATCHES := $(shell $Q -l qemu)
 
-$(VMLINUZ): dl/linux-$(LINUX_VERSION).tar.xz linux/config $(LINUX_PATCHES)
+build/linux/.extracted: dl/linux-$(LINUX_VERSION).tar.xz
 	rm -rf build/linux
 	mkdir -p build/linux
 	tar -C build/linux --strip-components=1 -xf $<
-	for p in $(LINUX_PATCHES); do\
-		patch -d build/linux -p1 <$$p || exit 1;\
-	done
-	cp linux/config build/linux/.config
+	touch $@
+
+build/linux/.patched: build/linux/.extracted linux/patches/series $(LINUX_PATCHES)
+	$Q -C build/linux -. pop -a
+	rm -rf build/linux/.patches
+	cp -a linux/patches build/linux/.patches
+	$Q -C build/linux -. push -a
+	touch $@
+
+build/linux/.config: linux/config build/linux/.extracted
+	cp $< $@
+
+$(VMLINUZ): build/linux/.patched build/linux/.config
 	$(MAKE) -C build/linux
 
 DRACUT_INSTALL=/usr/lib/dracut/dracut-install
