@@ -46,6 +46,7 @@ inst "rootfs/init" "/init"
 chmod 755 "$rootfs_dir/init"
 
 ln -s busybox "$rootfs_dir/bin/mount"
+ln -s busybox "$rootfs_dir/bin/ls"
 
 mkdir $rootfs_dir/lib.new
 (find $rootfs_dir/{,usr/}lib{,64} -type f -print0 || true) | xargs -0 mv -t $rootfs_dir/lib.new/
