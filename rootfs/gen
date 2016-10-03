@@ -56,7 +56,7 @@ touch $rootfs_dir/etc/ld.so.conf
 /sbin/ldconfig -r $rootfs_dir
 ln -s lib $rootfs_dir/lib64
 
-stubdom_disk=build/rootfs/stubdom-disk.img
+stubdom_disk=build/rootfs/stubdom-linux-rootfs
 rm -f "$stubdom_disk"
 genext2fs \
   --root "$rootfs_dir" \

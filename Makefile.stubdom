@@ -3,7 +3,7 @@ include Makefile.vars
 .PHONY: all install clean
 
 VMLINUZ=build/linux/arch/x86/boot/bzImage
-ROOTFS_IMG=build/rootfs/stubdom-disk.img
+ROOTFS_IMG=build/rootfs/stubdom-linux-rootfs
 
 # Stubdom disk content
 STUBDOM_DISK_FILE= \
@@ -102,7 +102,7 @@ $(ROOTFS_IMG): rootfs/gen $(STUBDOM_DISK_FILE)
 	env -u MAKELEVEL -u MAKEFLAGS -u MFLAGS ./$<
 
 install: $(VMLINUZ) $(ROOTFS_IMG)
-	install -D -m 444 $(VMLINUZ) $(DESTDIR)/usr/lib/xen/boot/vmlinuz-stubdom
+	install -D -m 444 $(VMLINUZ) $(DESTDIR)/usr/lib/xen/boot/stubdom-linux-kernel
 	install -m 444 $(ROOTFS_IMG) $(DESTDIR)/usr/lib/xen/boot/
 
 clean:

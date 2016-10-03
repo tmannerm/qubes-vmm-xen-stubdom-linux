@@ -37,9 +37,8 @@ make -f Makefile.stubdom DESTDIR=${RPM_BUILD_ROOT} install
 
 
 %files
-#TODO rename
-/usr/lib/xen/boot/stubdom-disk.img
-/usr/lib/xen/boot/vmlinuz-stubdom
+/usr/lib/xen/boot/stubdom-linux-rootfs
+/usr/lib/xen/boot/stubdom-linux-kernel
 
 
 %changelog
