@@ -17,10 +17,10 @@ all: $(VMLINUZ) $(ROOTFS_IMG)
 
 QEMU_PATCHES := $(shell $Q -l qemu)
 
-build/qemu/.extracted: dl/xen-$(XEN_VERSION).tar.gz
+build/qemu/.extracted: dl/qemu-$(QEMU_VERSION).tar.bz2
 	rm -rf build/qemu
 	mkdir -p build/qemu
-	tar -C build/qemu --strip-components=3 --no-wildcards-match-slash --wildcards -xf $< '*/tools/qemu-xen'
+	tar -C build/qemu --strip-components=1 -xf $<
 	touch $@
 
 build/qemu/.patched: build/qemu/.extracted qemu/patches/series $(QEMU_PATCHES)
@@ -48,10 +48,10 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-spice \
 		--disable-guest-agent \
 		--audio-drv-list= \
-		--disable-smartcard-nss \
+		--disable-smartcard \
 		--disable-vnc \
 		--disable-spice \
-		--enable-trace-backend=stderr \
+		--enable-trace-backends=log \
 		--disable-curses \
 		--prefix=
 		#--enable-stubdom \#

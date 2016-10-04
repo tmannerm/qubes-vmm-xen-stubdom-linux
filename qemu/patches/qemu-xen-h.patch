@@ -1,6 +1,6 @@
---- a/include/hw/xen/xen.h	2015-01-21 23:54:36.856666662 -0500
-+++ b/include/hw/xen/xen.h	2015-01-21 23:55:39.356666667 -0500
-@@ -28,6 +28,15 @@
+--- a/include/hw/xen/xen.h
++++ b/include/hw/xen/xen.h
+@@ -29,6 +29,15 @@ static inline bool xen_enabled(void)
      return xen_allowed;
  }
  

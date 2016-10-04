@@ -1,14 +1,14 @@
 --- a/configure
 +++ b/configure
-@@ -310,6 +310,7 @@
+@@ -278,6 +278,7 @@ rbd=""
+ smartcard=""
  libusb=""
  usb_redir=""
- glx=""
 +stubdom="no"
- zlib="yes"
- lzo=""
- snappy=""
-@@ -1050,6 +1051,8 @@
+ opengl=""
+ opengl_dmabuf="no"
+ avx2_opt="no"
+@@ -1041,6 +1042,8 @@ for opt do
    ;;
    --enable-usb-redir) usb_redir="yes"
    ;;
@@ -17,23 +17,23 @@
    --disable-zlib-test) zlib="no"
    ;;
    --disable-lzo) lzo="no"
-@@ -1374,6 +1377,7 @@
-   --enable-usb-redir       enable usb network redirection support
-   --enable-lzo             enable the support of lzo compression library
-   --enable-snappy          enable the support of snappy compression library
-+  --enable-stubdom         enable building the ioemu-stubdom
-   --disable-guest-agent    disable building of the QEMU Guest Agent
-   --enable-guest-agent     enable building of the QEMU Guest Agent
-   --with-vss-sdk=SDK-path  enable Windows VSS support in QEMU Guest Agent
-@@ -4339,6 +4343,7 @@
- if test "$xen" = "yes" ; then
+@@ -1368,6 +1371,7 @@ disabled with --disable-FEATURE, default
+   usb-redir       usb network redirection support
+   lzo             support of lzo compression library
+   snappy          support of snappy compression library
++  enable-stubdom  support for Xen stubdom
+   bzip2           support of bzip2 compression library
+                   (for reading bzip2-compressed dmg images)
+   seccomp         seccomp support
+@@ -4850,6 +4854,7 @@ if test "$xen" = "yes" ; then
    echo "xen ctrl version  $xen_ctrl_version"
+   echo "pv dom build      $xen_pv_domain_build"
  fi
 +echo "stubdom support   $stubdom"
  echo "brlapi support    $brlapi"
  echo "bluez  support    $bluez"
  echo "Documentation     $docs"
-@@ -4782,6 +4787,11 @@
+@@ -5353,6 +5358,11 @@ if test "$rbd" = "yes" ; then
    echo "RBD_LIBS=$rbd_libs" >> $config_host_mak
  fi
  

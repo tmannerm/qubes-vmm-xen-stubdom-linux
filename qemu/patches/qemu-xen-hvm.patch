@@ -1,6 +1,6 @@
 --- a/xen-hvm.c
 +++ b/xen-hvm.c
-@@ -1201,6 +1201,10 @@
+@@ -1214,6 +1214,10 @@ void xen_hvm_init(PCMachineState *pcms,
      state->wakeup.notify = xen_wakeup_notifier;
      qemu_register_wakeup_notifier(&state->wakeup);
  
@@ -11,18 +11,17 @@
      rc = xen_get_ioreq_server_info(xen_xc, xen_domid, state->ioservid,
                                     &ioreq_pfn, &bufioreq_pfn,
                                     &bufioreq_evtchn);
-@@ -1289,6 +1293,7 @@
+@@ -1309,12 +1313,21 @@ void xen_hvm_init(PCMachineState *pcms,
      state->device_listener = xen_device_listener;
      device_listener_register(&state->device_listener);
  
 +#ifndef CONFIG_STUBDOM
      /* Initialize backend core & drivers */
      if (xen_be_init() != 0) {
-         fprintf(stderr, "%s: xen backend core setup failed\n", __FUNCTION__);
-@@ -1297,6 +1302,14 @@
-     xen_be_register("console", &xen_console_ops);
-     xen_be_register("vkbd", &xen_kbdmouse_ops);
-     xen_be_register("qdisk", &xen_blkdev_ops);
+         error_report("xen backend core setup failed");
+         goto err;
+     }
+     xen_be_register_common();
 +#else
 +    xenstore = xs_daemon_open();
 +    if (!xenstore) {
@@ -32,5 +31,5 @@
 +#endif
 +
      xen_read_physmap(state);
+     return;
  
-     return 0;

@@ -12,7 +12,7 @@ UNTRUSTED_SUFF := .UNTRUSTED
 FETCH_CMD := wget --no-use-server-timestamps -q -O
 
 URLS := \
-    http://bits.xensource.com/oss-xen/release/$(XEN_VERSION)/xen-$(XEN_VERSION).tar.gz.sig \
+    http://wiki.qemu-project.org/download/qemu-$(QEMU_VERSION).tar.bz2.sig \
     https://sourceforge.net/projects/genext2fs/files/genext2fs/$(GENEXT2FS_VERSION)/genext2fs-$(GENEXT2FS_VERSION).tar.gz \
     https://kernel.org/pub/linux/kernel/v$(firstword $(subst ., ,$(LINUX_VERSION))).x/linux-$(LINUX_VERSION).tar.sign
 
