@@ -53,8 +53,8 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-spice \
 		--enable-trace-backends=log \
 		--disable-curses \
+		--enable-stubdom \
 		--prefix=
-		#--enable-stubdom \#
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status
 	$(MAKE) -C build/qemu
