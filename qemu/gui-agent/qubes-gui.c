@@ -505,7 +505,7 @@ static const DisplayChangeListenerOps dcl_ops = {
 	.dpy_refresh = qubesgui_pv_refresh
 };
 
-int qubesgui_pv_display_init(DisplayState * ds)
+int qubesgui_pv_display_init(int log_level)
 {
 
 	fprintf(stderr, "qubes_gui/init: %d\n", __LINE__);
@@ -515,6 +515,7 @@ int qubesgui_pv_display_init(DisplayState * ds)
 
 	qs->init_done = 0;
 	qs->init_state = 0;
+	qs->log_level = log_level;
 
 	qs->u2mfn_fd = u2mfn_get_fd();
 	if (qs->u2mfn_fd == -1) {
