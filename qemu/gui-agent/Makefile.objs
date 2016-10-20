@@ -1,0 +1,5 @@
+QUBES_GUI_CFLAGS := -I/usr/include $(shell pkg-config --cflags vchan-xen) -I$(dir $(lastword $(MAKEFILE_LIST)))/include
+
+common-obj-y += qubes-gui.o qubes-gui-keymap.o gui-common/
+qubes-gui.o-cflags += $(QUBES_GUI_CFLAGS)
+qubes-gui.o-libs += $(shell pkg-config --libs vchan-xen) -lu2mfn
