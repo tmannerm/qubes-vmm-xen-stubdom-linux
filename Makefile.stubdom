@@ -59,7 +59,7 @@ build/qemu/config.status: build/qemu/.patched
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status
 	$(MAKE) -C build/qemu
 
-LINUX_PATCHES := $(shell $Q -l qemu)
+LINUX_PATCHES := $(shell $Q -l linux)
 
 build/linux/.extracted: dl/linux-$(LINUX_VERSION).tar.xz
 	rm -rf build/linux
