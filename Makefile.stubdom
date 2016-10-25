@@ -30,7 +30,7 @@ build/qemu/.patched: build/qemu/.extracted qemu/patches/series $(QEMU_PATCHES)
 	$Q -C build/qemu -. push -a
 	touch $@
 
-QEMU_GUI_AGENT_FILES := $(shell find qemu/gui-agent -type f \( -name '*.[ch]' -o -name 'Makefile*' \) | sort)
+QEMU_GUI_AGENT_FILES := $(shell find qemu/gui-agent -type f \! \( -name '*.swp' -o -name '*~' -o -name '.*' \) | sort)
 
 build/qemu/.gui-agent-copied-in: build/qemu/.extracted $(QEMU_GUI_AGENT_FILES)
 	rm -rf build/qemu/gui-agent
