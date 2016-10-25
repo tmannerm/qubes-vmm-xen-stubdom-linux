@@ -21,6 +21,10 @@ BuildRequires: automake
 # QEMU
 BuildRequires: python
 
+# QEMU Qubes gui-agent
+BuildRequires: qubes-gui-common-devel
+BuildRequires: qubes-kernel-vm-support
+
 #TODO: BuildRequires
 
 %description
