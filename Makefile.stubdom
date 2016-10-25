@@ -84,10 +84,10 @@ build/linux/.patched: build/linux/.extracted linux/patches/series $(LINUX_PATCHE
 build/linux/.config: linux/config build/linux/.extracted
 	cp $< $@
 
-U2MFN_DIR = $(shell ls -d /usr/src/u2mfn-* | sort -V | tail -n 1)
+U2MFN_DIR = $(shell ls -d /usr/src/u2mfn-* 2>/dev/null | sort -V | tail -n 1)
 
-ifeq ($(U2MFN_DIR),/usr/src/u2mfn-*)
-	$(error "u2mfn dir not found in /usr/src/")
+ifeq ($(U2MFN_DIR),)
+$(error "u2mfn dir not found in /usr/src/")
 endif
 
 build/linux/.u2mfn-copied-in: build/linux/.extracted $(U2MFN_DIR)
