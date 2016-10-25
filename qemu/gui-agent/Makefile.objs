@@ -1,5 +1,12 @@
-QUBES_GUI_CFLAGS := -I/usr/include $(shell pkg-config --cflags vchan-xen) -I$(dir $(lastword $(MAKEFILE_LIST)))/include
+QUBES_GUI_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
-common-obj-y += qubes-gui.o qubes-gui-keymap.o gui-common/
+QUBES_GUI_CFLAGS := -I/usr/include $(shell pkg-config --cflags vchan-xen) -I$(QUBES_GUI_DIR)/include
+
+common-obj-y += qubes-gui.o gui-common/
 qubes-gui.o-cflags += $(QUBES_GUI_CFLAGS)
 qubes-gui.o-libs += $(shell pkg-config --libs vchan-xen) -lu2mfn
+
+GENERATED_HEADERS += $(QUBES_GUI_DIR)/qubes-keycode2scancode.c
+
+$(QUBES_GUI_DIR)/qubes-keycode2scancode.c: $(QUBES_GUI_DIR)/gen-keycode2scancode
+	$< qubes_keycode2scancode > $@
