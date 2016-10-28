@@ -45,6 +45,7 @@ dl/%: checksums/%.sha512
 	@mv $@$(UNTRUSTED_SUFF) $@
 
 get-sources: $(ALL_FILES)
+	git submodule update --init
 
 verify-sources:
 	@true

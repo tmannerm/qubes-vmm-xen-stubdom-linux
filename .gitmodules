@@ -1,0 +1,3 @@
+[submodule "qemu/gui-agent"]
+	path = qemu/gui-agent
+	url = https://github.com/QubesOS/qubes-gui-agent-xen-hvm-stubdom
