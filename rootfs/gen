@@ -56,11 +56,10 @@ touch $rootfs_dir/etc/ld.so.conf
 /sbin/ldconfig -r $rootfs_dir
 ln -s lib $rootfs_dir/lib64
 
-stubdom_disk=build/rootfs/stubdom-linux-rootfs
-rm -f "$stubdom_disk"
-genext2fs \
-  --root "$rootfs_dir" \
-  --size-in-blocks $(($(du -s "$rootfs_dir"|cut -f1)+2000)) \
-  --reserved-percentage 0 \
-  --squash \
-  "$stubdom_disk"
+find "$rootfs_dir" -print0 | xargs -0 touch -ch -d @0
+(
+  cd "$rootfs_dir"
+  find . -print0 | \
+    LC_ALL=C sort -z | \
+    cpio --null -R 0:0 -H newc -o
+) | gzip -n -9 > build/rootfs/stubdom-linux-rootfs
