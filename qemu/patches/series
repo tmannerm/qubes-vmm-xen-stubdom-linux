@@ -2,3 +2,4 @@ qemu-configure.patch
 qemu-xen-h.patch
 qemu-xen-hvm.patch
 qubes-gui-agent.patch
+pv-net-cleanup.patch
