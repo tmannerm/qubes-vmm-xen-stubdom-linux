@@ -7,6 +7,8 @@ mount -t sysfs /sys /sys
 mount -t proc /proc /proc
 mount -t xenfs -o nodev /proc/xen /proc/xen
 
+echo 1 > /proc/sys/vm/overcommit_memory
+
 if test -e /sys/class/net/eth0; then
   ip link set eth0 address fe:ff:ff:ff:ff:fe
   ip addr flush eth0
