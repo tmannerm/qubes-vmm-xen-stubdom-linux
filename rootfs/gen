@@ -32,7 +32,7 @@ inst() {
     "$DRACUT_INSTALL" -D "$rootfs_dir" -l "$@"
 }
 
-mkdir -p "$rootfs_dir"/{bin,etc,proc/xen,sys,lib,dev,tmp}
+mkdir -p "$rootfs_dir"/{bin,etc,proc/xen,sys,dev,tmp}
 
 echo "Building initrd in $rootfs_dir"
 inst busybox /bin/busybox
