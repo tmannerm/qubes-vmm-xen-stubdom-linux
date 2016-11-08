@@ -1,0 +1,5 @@
+#!/bin/busybox sh
+
+echo "$0 $*"
+
+xenstore-rm device/vif/0

@@ -40,8 +40,10 @@ make DESTDIR="$rootfs_dir" -C build/qemu install
 # this gather libs install on the system for qemu
 inst "$rootfs_dir/bin/qemu-system-i386" /bin/qemu
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
+inst "/usr/bin/xenstore-rm" "/bin/xenstore-rm"
 inst "rootfs/qemu-ifup" "/etc/qemu-ifup"
 chmod +x "$rootfs_dir/etc/qemu-ifup"
+inst "rootfs/qemu-ifdown" "/etc/qemu-ifdown"
 inst "rootfs/init" "/init"
 chmod 755 "$rootfs_dir/init"
 
