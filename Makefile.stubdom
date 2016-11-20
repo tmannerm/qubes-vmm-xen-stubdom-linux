@@ -59,8 +59,44 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-vnc \
 		--disable-spice \
 		--enable-trace-backends=log \
+		--disable-gnutls \
+		--disable-nettle \
+		--disable-gcrypt \
+		--disable-vte \
 		--disable-curses \
+		--disable-cocoa \
+		--disable-virtfs \
+		--disable-brlapi \
+		--disable-curl \
+		--disable-rdma \
+		--disable-uuid \
+		--disable-vde \
+		--disable-netmap \
+		--disable-linux-aio \
+		--disable-cap-ng \
+		--disable-attr \
+		--disable-rbd \
+		--disable-libiscsi \
+		--disable-libnfs \
+		--disable-usb-redir \
+		--disable-lzo \
+		--disable-snappy \
+		--disable-bzip2 \
+		--disable-seccomp \
+		--disable-coroutine-pool \
+		--disable-glusterfs \
+		--disable-archipelago \
+		--disable-tpm \
+		--disable-libssh2 \
+		--disable-vhdx \
+		--disable-numa \
+		--disable-tcmalloc \
+		--disable-jemalloc \
+		--disable-vhost-scsi \
+		--disable-qom-cast-debug \
+		--disable-virglrenderer \
 		--enable-stubdom \
+		--cxx=/non-existent \
 		--prefix=
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
