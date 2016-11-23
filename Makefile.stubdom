@@ -96,6 +96,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-qom-cast-debug \
 		--disable-virglrenderer \
 		--enable-stubdom \
+		--disable-tools \
 		--cxx=/non-existent \
 		--prefix=
 
