@@ -117,8 +117,8 @@ build/linux/.patched: build/linux/.extracted linux/patches/series $(LINUX_PATCHE
 	$Q -C build/linux -. push -a
 	touch $@
 
-build/linux/.config: linux/config build/linux/.extracted
-	cp $< $@
+build/linux/.config: $(sort $(wildcard linux/config/[0-9][0-9]-*)) build/linux/.extracted
+	cd build/linux; env -u MAKEFLAGS ./scripts/kconfig/merge_config.sh -n /dev/null ../../linux/config/[0-9][0-9]-*
 
 U2MFN_DIR = $(shell ls -d /usr/src/u2mfn-* 2>/dev/null | sort -V | tail -n 1)
 

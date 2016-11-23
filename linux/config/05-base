@@ -1,0 +1,28 @@
+## based on linux/kernel/configs/tiny.config
+CONFIG_CC_OPTIMIZE_FOR_SIZE=y
+# xz needs potentialy more RAM so better use gzip (and disk space is not
+# relevant here)
+#CONFIG_KERNEL_GZIP=y
+CONFIG_OPTIMIZE_INLINING=y
+CONFIG_SLOB=y
+
+## enable 64 bit support
+CONFIG_64BIT=y
+
+## iniramfs
+CONFIG_BLK_DEV_INITRD=y
+CONFIG_RD_GZIP=y
+
+## misc
+CONFIG_NO_HZ_IDLE=y
+CONFIG_BINFMT_ELF=y
+CONFIG_BINFMT_SCRIPT=y
+CONFIG_PROC_FS=y
+CONFIG_PROC_SYSCTL=y
+CONFIG_SYSFS=y
+CONFIG_DEVTMPFS=y
+CONFIG_PRINTK=y
+CONFIG_BUG=y
+
+CONFIG_LOCALVERSION="-xen-stubdom"
+CONFIG_DEFAULT_HOSTNAME="xen-stubdom"
