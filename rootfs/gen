@@ -36,19 +36,23 @@ mkdir -p "$rootfs_dir"/{bin,etc,proc/xen,sys,dev,tmp}
 
 echo "Building initrd in $rootfs_dir"
 inst busybox /bin/busybox
+for i in sh mount ls mdev; do
+  ln -s busybox "$rootfs_dir/bin/$i"
+done
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
 inst build/qemu/install/bin/qemu-system-i386 /bin/qemu
 for i in vgabios-{cirrus,stdvga}.bin efi-rtl8139.rom; do
   inst build/qemu/install/share/qemu/$i /share/qemu/$i
 done
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
+inst "/usr/bin/xenstore-write" "/bin/xenstore-write"
 inst "/usr/bin/xenstore-rm" "/bin/xenstore-rm"
 inst "rootfs/qemu-ifup" "/etc/qemu-ifup"
 inst "rootfs/qemu-ifdown" "/etc/qemu-ifdown"
 inst "rootfs/init" "/init"
 
-ln -s busybox "$rootfs_dir/bin/mount"
-ln -s busybox "$rootfs_dir/bin/ls"
+inst rootfs/mdev.conf /etc/mdev.conf
+inst rootfs/pci-dev-change /bin/pci-dev-change
 
 mkdir $rootfs_dir/lib.new
 (find $rootfs_dir/{,usr/}lib{,64} -type f -print0 || true) | xargs -0 mv -t $rootfs_dir/lib.new/

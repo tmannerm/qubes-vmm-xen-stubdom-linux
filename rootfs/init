@@ -1,4 +1,4 @@
-#!/bin/busybox sh
+#!/bin/sh
 
 set -e
 set -x
@@ -7,6 +7,10 @@ mount -t sysfs /sys /sys
 mount -t proc /proc /proc
 
 echo 1 > /proc/sys/vm/overcommit_memory
+
+: > /dev/mdev.seq
+: > /dev/mdev.log
+echo /bin/mdev > /proc/sys/kernel/hotplug
 
 if test -e /sys/class/net/eth0; then
   ip link set eth0 address fe:ff:ff:ff:ff:fe
@@ -39,4 +43,44 @@ domid=$(/bin/xenstore-read "target")
 vm_path=$(xenstore-read "/local/domain/$domid/vm")
 dm_args=$(xenstore-read "$vm_path/image/dmargs")
 
-/bin/qemu $dm_args
+mkdir /tmp/qmp
+mkdir /tmp/qmp/req
+mkdir /tmp/qmp/res
+
+mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
+qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control $dm_args &
+qemu_pid=$!
+
+(
+set +x
+IFS= read -r line
+echo "$line" >&2
+echo '{"execute": "qmp_capabilities"}' | tee /proc/self/fd/2
+IFS= read -r line
+echo "$line" >&2
+while true; do
+  id=$(ls -t /tmp/qmp/req | head -n 1)
+  if [ "$id" = "" ]; then
+    sleep 0.1
+    continue
+  fi
+
+  echo $id >&2
+  cat /tmp/qmp/req/$id | tee /proc/self/fd/2
+  rm /tmp/qmp/req/$id
+  while IFS= read -r line; do
+    echo "$line" >&2
+    # we can't grep directly because we can't control grep's buffering
+    if ! echo "$line" | grep -q '"event"\s*:'; then
+      break
+    fi
+    sleep 0.5
+  done
+  echo "$line" > /tmp/qmp/new-res
+  mv /tmp/qmp/new-res /tmp/qmp/res/$id
+done
+) >/tmp/qmp/qemu.in </tmp/qmp/qemu.out &
+
+while true; do
+  sleep 1d
+done

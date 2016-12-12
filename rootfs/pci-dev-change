@@ -1,0 +1,72 @@
+#!/bin/sh
+
+exec >/dev/hvc0 2>&1
+
+echo hi2
+
+set -eu
+set -x
+
+qmp_req() {
+  local id=$(cat /proc/sys/kernel/random/uuid)
+  echo "$1" > /tmp/qmp/new-req_$id
+  mv /tmp/qmp/new-req_$id /tmp/qmp/req/$id
+  while ! [ -f /tmp/qmp/res/$id ]; do sleep 0.1; done
+  cat /tmp/qmp/res/$id
+  rm /tmp/qmp/res/$id
+}
+
+qdev_id="xen-pci-pt_$(echo $MDEV | tr : -)"
+
+if [ "$ACTION" = "remove" ]; then
+  qmp_req "$(cat <<EOC
+{"execute": "device_del", "arguments": {"id": "$qdev_id"}}
+EOC
+)" > /dev/null
+  exit 0
+elif [ "$ACTION" != "add" ]; then
+  echo "unexpected action: $ACTION"
+  exit 1
+fi
+
+be=$(xenstore-read device/pci/0/backend)
+devs=$(xenstore-read $be/num_devs)
+
+dev_n=
+for i in $(seq 0 $(( devs - 1 ))); do
+  if [ $MDEV = $(xenstore-read $be/vdev-$i | sed 's/\.0\([0-9]\)$/.\1/') ]; then
+    dev_n=$i
+    break
+  fi
+done
+
+if [ -z "$dev_n" ]; then
+  echo "could not find backend entry for device $MDEV"
+  exit 1
+fi
+
+addr_arg=
+vdevfn=$(xenstore-read $be/vdevfn-$dev_n || true)
+if [ -n "$vdevfn" ]; then
+  addr_arg="\"addr\": \"$((($vdevfn >> 3) & 0x1f)).$(($vdevfn & 0x07))\", "
+fi
+
+permissive=false
+if xenstore-read $be/opts-$dev_n | grep -q 'permissive=1'; then
+  permissive=true
+fi
+
+qmp_req "$(cat <<EOC
+{"execute": "device_add", "arguments": {"driver": "xen-pci-passthrough", "id": "$qdev_id", "hostaddr": "$MDEV",$addr_arg "permissive": $permissive}}
+EOC
+)" > /dev/null
+
+# XXX: use jq?
+slot_func=$(qmp_req '{"execute": "query-pci"}' | sed 's/"qdev_id"/\n\0/g' | sed -n '/"qdev_id": "'"$qdev_id"'"/{s/.*"slot": \([0-9]\+\),.*"function": \([0-9]\+\),.*/\1,\2/;p}')
+
+slot=$(echo $slot_func | cut -d , -f 1)
+func=$(echo $slot_func | cut -d , -f 2)
+
+vdevfn=$(( (($slot & 0x1f) << 3) | ($func & 0x07) ))
+
+xenstore-write device-model/$(xenstore-read target)/new-pci-vdevfn $vdevfn

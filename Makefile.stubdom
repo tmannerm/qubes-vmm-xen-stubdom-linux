@@ -9,7 +9,10 @@ ROOTFS_IMG=build/rootfs/stubdom-linux-rootfs
 STUBDOM_DISK_FILE= \
   build/qemu/i386-softmmu/qemu-system-i386 \
   rootfs/init \
-  rootfs/qemu-ifup
+  rootfs/qemu-ifup \
+  rootfs/qemu-ifdown \
+  rootfs/mdev.conf \
+  rootfs/pci-dev-change
 
 Q=scripts/quilt-wrapper
 
@@ -41,6 +44,7 @@ build/qemu/config.status: build/qemu/.patched
 	cd build/qemu && ./configure \
 		--target-list=i386-softmmu \
 		--enable-xen \
+		--enable-xen-pci-passthrough \
 		--disable-werror \
 		--disable-sdl \
 		--disable-kvm \
