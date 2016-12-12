@@ -1,0 +1,35 @@
+--- a/hw/xen/xen_pt_config_init.c
++++ b/hw/xen/xen_pt_config_init.c
+@@ -1721,6 +1721,7 @@ static const XenPTRegGroupInfo xen_pt_em
+         .grp_size   = 0x04,
+         .size_init  = xen_pt_reg_grp_size_init,
+     },
++#ifndef CONFIG_STUBDOM
+     /* MSI Capability Structure reg group */
+     {
+         .grp_id      = PCI_CAP_ID_MSI,
+@@ -1729,6 +1730,7 @@ static const XenPTRegGroupInfo xen_pt_em
+         .size_init   = xen_pt_msi_size_init,
+         .emu_regs = xen_pt_emu_reg_msi,
+     },
++#endif
+     /* PCI-X Capabilities List Item reg group */
+     {
+         .grp_id     = PCI_CAP_ID_PCIX,
+@@ -1773,6 +1775,8 @@ static const XenPTRegGroupInfo xen_pt_em
+         .size_init   = xen_pt_pcie_size_init,
+         .emu_regs = xen_pt_emu_reg_pcie,
+     },
++#ifndef CONFIG_STUBDOM
++#error "test"
+     /* MSI-X Capability Structure reg group */
+     {
+         .grp_id      = PCI_CAP_ID_MSIX,
+@@ -1781,6 +1785,7 @@ static const XenPTRegGroupInfo xen_pt_em
+         .size_init   = xen_pt_msix_size_init,
+         .emu_regs = xen_pt_emu_reg_msix,
+     },
++#endif
+     /* Intel IGD Opregion group */
+     {
+         .grp_id      = XEN_PCI_INTEL_OPREGION,
