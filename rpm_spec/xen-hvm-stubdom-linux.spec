@@ -20,12 +20,23 @@ BuildRequires: automake
 
 # QEMU
 BuildRequires: python
+BuildRequires: zlib-devel
+BuildRequires: xen-devel
+BuildRequires: xen-devel
+BuildRequires: glib2-devel
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
 BuildRequires: qubes-kernel-vm-support
+BuildRequires: qubes-libvchan-xen-devel
 
-#TODO: BuildRequires
+# Linux
+BuildRequires: bc
+
+# rootfs
+BuildRequires: xen-runtime
+BuildRequires: busybox
+BuildRequires: dracut
 
 %description
 This package contains the files (i.e. kernel and rootfs) for a Linux based
