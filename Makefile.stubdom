@@ -142,22 +142,9 @@ $(VMLINUZ): build/linux/.patched build/linux/.config build/linux/.u2mfn-copied-i
 
 DRACUT_INSTALL=/usr/lib/dracut/dracut-install
 
-GENEXT2FS = $(shell which genext2fs 2>/dev/null)
-ifeq ($(GENEXT2FS),)
-GENEXT2FS = $(CURDIR)/build/genext2fs/genext2fs
-endif
-
-$(CURDIR)/build/genext2fs/genext2fs: dl/genext2fs-$(GENEXT2FS_VERSION).tar.gz
-	rm -rf build/genext2fs
-	mkdir -p build/genext2fs
-	tar -C build/genext2fs --strip-components=1 -xf $<
-	cd build/genext2fs && ./configure
-	$(MAKE) -C build/genext2fs
-
-rootfs/gen: $(DRACUT_INSTALL) $(GENEXT2FS)
+rootfs/gen: $(DRACUT_INSTALL)
 
 export DRACUT_INSTALL
-export GENEXT2FS
 $(ROOTFS_IMG): rootfs/gen $(STUBDOM_DISK_FILE)
 	env -u MAKELEVEL -u MAKEFLAGS -u MFLAGS ./$<
 
