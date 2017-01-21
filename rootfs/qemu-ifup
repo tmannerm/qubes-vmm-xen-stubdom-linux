@@ -1,4 +1,4 @@
-#! /bin/busybox sh
+#!/bin/sh
 
 ip link set "$1" down
 ip link set "$1" address fe:ff:ff:ff:ff:fd
