@@ -25,7 +25,28 @@ mkdir -p "$rootfs_dir"/{bin,etc,proc/xen,sys,dev,tmp}
 
 echo "Building initrd in $rootfs_dir"
 inst busybox /bin/busybox
-for i in sh mount ls mdev; do
+for i in \
+        brctl \
+        cat \
+        cut \
+        grep \
+        head \
+        ip \
+        ls \
+        mdev \
+        mkdir \
+        mkfifo \
+        mount \
+        mv \
+        rm \
+        sed \
+        seq \
+        sh \
+        sleep \
+        tee \
+        tr \
+        udhcpd
+do
   ln -s busybox "$rootfs_dir/bin/$i"
 done
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
