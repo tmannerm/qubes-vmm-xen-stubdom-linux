@@ -21,7 +21,7 @@ if test -e /sys/class/net/eth0; then
   ip link set br0 up
   client_ip=$(xenstore-read $(xenstore-read device/vif/0/backend)/ip)
   net_prefix="${client_ip%.*}"
-  busybox udhcpd -f -I $net_prefix.1 - <<EOC &
+  udhcpd -f -I $net_prefix.1 - <<EOC &
 start $client_ip
 end $client_ip
 max_leases 1
