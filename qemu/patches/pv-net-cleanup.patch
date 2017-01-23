@@ -4,7 +4,51 @@
  static void pci_unplug_nics(PCIBus *bus)
  {
      pci_for_each_device(bus, 0, unplug_nic, NULL);
-+    net_cleanup();
++    net_cleanup(false);
  }
  
  static void unplug_disks(PCIBus *b, PCIDevice *d, void *o)
+--- a/include/net/net.h
++++ b/include/net/net.h
+@@ -207,7 +207,7 @@ int net_client_init(QemuOpts *opts, bool
+ int net_client_parse(QemuOptsList *opts_list, const char *str);
+ int net_init_clients(void);
+ void net_check_clients(void);
+-void net_cleanup(void);
++void net_cleanup(bool final);
+ void hmp_host_net_add(Monitor *mon, const QDict *qdict);
+ void hmp_host_net_remove(Monitor *mon, const QDict *qdict);
+ void netdev_add(QemuOpts *opts, Error **errp);
+--- a/net/net.c
++++ b/net/net.c
+@@ -1428,7 +1428,7 @@ static void net_vm_change_state_handler(
+     }
+ }
+ 
+-void net_cleanup(void)
++void net_cleanup(bool final)
+ {
+     NetClientState *nc;
+ 
+@@ -1444,7 +1444,9 @@ void net_cleanup()
+         }
+     }
+ 
+-    qemu_del_vm_change_state_handler(net_change_state_entry);
++    if (final) {
++        qemu_del_vm_change_state_handler(net_change_state_entry);
++    }
+ }
+ 
+ void net_check_clients(void)
+--- a/vl.c
++++ b/vl.c
+@@ -4651,7 +4651,7 @@ int main(int argc, char **argv, char **e
+ #endif
+ 
+     /* vhost-user must be cleaned up before chardevs.  */
+-    net_cleanup();
++    net_cleanup(true);
+     audio_cleanup();
+     monitor_cleanup();
+     qemu_chr_cleanup();
