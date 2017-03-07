@@ -26,7 +26,7 @@
 +    xenstore = xs_daemon_open();
 +    if (!xenstore) {
 +        error_report("can't connect to xenstored");
-+        return -1;
++        goto err;
 +    }
 +#endif
 +
