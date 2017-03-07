@@ -20,7 +20,7 @@ all: $(VMLINUZ) $(ROOTFS_IMG)
 
 QEMU_PATCHES := $(shell $Q -l qemu)
 
-build/qemu/.extracted: dl/qemu-$(QEMU_VERSION).tar.bz2
+build/qemu/.extracted: dl/qemu-$(QEMU_VERSION).tar.xz
 	rm -rf build/qemu
 	mkdir -p build/qemu
 	tar -C build/qemu --strip-components=1 -xf $<
@@ -73,7 +73,6 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-brlapi \
 		--disable-curl \
 		--disable-rdma \
-		--disable-uuid \
 		--disable-vde \
 		--disable-netmap \
 		--disable-linux-aio \
@@ -92,7 +91,6 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-archipelago \
 		--disable-tpm \
 		--disable-libssh2 \
-		--disable-vhdx \
 		--disable-numa \
 		--disable-tcmalloc \
 		--disable-jemalloc \
@@ -101,6 +99,9 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-virglrenderer \
 		--enable-stubdom \
 		--disable-tools \
+		--disable-replication \
+		--disable-vhost-vsock \
+		--disable-colo \
 		--cxx=/non-existent \
 		--prefix=
 
