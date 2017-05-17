@@ -51,7 +51,7 @@ do
 done
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
 inst build/qemu/install/bin/qemu-system-i386 /bin/qemu
-for i in vgabios-{cirrus,stdvga}.bin efi-rtl8139.rom; do
+for i in vgabios-{cirrus,stdvga}.bin efi-rtl8139.rom linuxboot.bin; do
   inst build/qemu/install/share/qemu/$i /share/qemu/$i
 done
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"

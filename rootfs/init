@@ -47,8 +47,27 @@ mkdir /tmp/qmp
 mkdir /tmp/qmp/req
 mkdir /tmp/qmp/res
 
+kernel=
+if [ -b /dev/xvdd ]; then
+    mkdir /tmp/boot
+    mount /dev/xvdd /tmp/boot -o ro
+    if [ -f /tmp/boot/vmlinuz ]; then
+        kernel="$kernel -kernel /tmp/boot/vmlinuz"
+    fi
+    if [ -f /tmp/boot/initramfs ]; then
+        kernel="$kernel -initrd /tmp/boot/initramfs"
+    fi
+fi
+
 mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
-qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control $dm_args &
+if [ -f /tmp/boot/cmdline.txt ]; then
+    qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
+        $dm_args $kernel -append "$(cat /tmp/boot/cmdline.txt)" &
+else
+    qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
+        $dm_args $kernel &
+fi
+
 qemu_pid=$!
 
 (
