@@ -57,10 +57,17 @@ if [ -b /dev/xvdd ]; then
     if [ -f /tmp/boot/initramfs ]; then
         kernel="$kernel -initrd /tmp/boot/initramfs"
     fi
+    if [ -f /tmp/boot/cmdline.txt ]; then
+        cp /tmp/boot/cmdline.txt /tmp/cmdline.txt
+    else
+        # default kernel cmdline
+        echo "console=hvc0 root=/dev/mapper/dmroot swiotlb=8192" \
+            > /tmp/cmdline.txt
+    fi
 fi
 
 mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
-if [ -f /tmp/boot/cmdline.txt ]; then
+if [ -f /tmp/cmdline.txt ]; then
     qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
         $dm_args $kernel -append "$(cat /tmp/boot/cmdline.txt)" &
 else
