@@ -56,13 +56,20 @@ for i in vgabios-{cirrus,stdvga}.bin efi-rtl8139.rom linuxboot.bin; do
 done
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
 inst "/usr/bin/xenstore-write" "/bin/xenstore-write"
+
+inst "/usr/bin/xenstore-watch" "/bin/xenstore-watch"
+# libgcc_s.so.1 is required by xenstore-watch for pthread:
+for i in /lib{64,/x86_64-linux-gnu}/libgcc_s.so.1; do
+  if [ -e "$i" ]; then
+    inst "$i"
+    break
+  fi
+done
+
 inst "/usr/bin/xenstore-rm" "/bin/xenstore-rm"
 inst "rootfs/qemu-ifup" "/etc/qemu-ifup"
 inst "rootfs/qemu-ifdown" "/etc/qemu-ifdown"
 inst "rootfs/init" "/init"
-
-inst rootfs/mdev.conf /etc/mdev.conf
-inst rootfs/pci-dev-change /bin/pci-dev-change
 
 mkdir $rootfs_dir/lib.new
 (find $rootfs_dir/{,usr/}lib{,64} -type f -print0 || true) | xargs -0 mv -t $rootfs_dir/lib.new/

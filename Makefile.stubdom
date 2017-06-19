@@ -10,9 +10,7 @@ STUBDOM_DISK_FILE= \
   build/qemu/i386-softmmu/qemu-system-i386 \
   rootfs/init \
   rootfs/qemu-ifup \
-  rootfs/qemu-ifdown \
-  rootfs/mdev.conf \
-  rootfs/pci-dev-change
+  rootfs/qemu-ifdown
 
 Q=scripts/quilt-wrapper
 
