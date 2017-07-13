@@ -7,7 +7,7 @@
 +    net_cleanup(false);
  }
  
- static void unplug_disks(PCIBus *b, PCIDevice *d, void *o)
+ static void unplug_disks(PCIBus *b, PCIDevice *d, void *opaque)
 --- a/include/net/net.h
 +++ b/include/net/net.h
 @@ -205,7 +205,7 @@ int net_client_init(QemuOpts *opts, bool
@@ -21,7 +21,7 @@
  void netdev_add(QemuOpts *opts, Error **errp);
 --- a/net/net.c
 +++ b/net/net.c
-@@ -1433,7 +1433,7 @@ static void net_vm_change_state_handler(
+@@ -1439,7 +1439,7 @@ static void net_vm_change_state_handler(
      }
  }
  
@@ -30,7 +30,7 @@
  {
      NetClientState *nc;
  
-@@ -1449,7 +1449,9 @@ void net_cleanup(void)
+@@ -1455,7 +1455,9 @@ void net_cleanup(void)
          }
      }
  
@@ -43,7 +43,7 @@
  void net_check_clients(void)
 --- a/vl.c
 +++ b/vl.c
-@@ -4714,7 +4714,7 @@ int main(int argc, char **argv, char **e
+@@ -4739,7 +4739,7 @@ int main(int argc, char **argv, char **e
      res_free();
  
      /* vhost-user must be cleaned up before chardevs.  */
