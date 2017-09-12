@@ -2,7 +2,7 @@ qemu-configure.patch
 qemu-xen-h.patch
 qemu-xen-hvm.patch
 qubes-gui-agent.patch
-disable-msi-caps.patch
+disable-msix-caps.patch
 fw_cfg-init.patch
 38bb54f3-replication-Make-disable-replication-compile-again.patch
 153eba47-ACPI-don-t-call-acpi_pcihp_device_plug_cb-on-xen.patch
