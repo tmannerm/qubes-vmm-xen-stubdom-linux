@@ -9,3 +9,4 @@ fw_cfg-init.patch
 round-pci-region-sizes.patch
 6c808651-xen-platform-Cleanup-network-infrastructure-when-emu.patch
 stubdom-pci-addr-fix.patch
+pci-fix-emu-mask.patch
