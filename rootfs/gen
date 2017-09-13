@@ -12,8 +12,8 @@ rm -fr "$rootfs_dir"
 # Using dracut to gather the shared libraries
 # from https://dracut.wiki.kernel.org/index.php/Main_Page
 if ! test -x "$DRACUT_INSTALL"; then
-  echo DRACUT_INSTALL unset or incorrect >&2
-  exit 1
+    echo DRACUT_INSTALL unset or incorrect >&2
+    exit 1
 fi
 
 inst() {
@@ -26,33 +26,33 @@ mkdir -p "$rootfs_dir"/{bin,etc,proc/xen,sys,dev,tmp}
 echo "Building initrd in $rootfs_dir"
 inst busybox /bin/busybox
 for i in \
-        brctl \
-        cat \
-        cut \
-        grep \
-        head \
-        ip \
-        ls \
-        mdev \
-        mkdir \
-        mkfifo \
-        mount \
-        mv \
-        rm \
-        sed \
-        seq \
-        sh \
-        sleep \
-        tee \
-        tr \
-        udhcpd
+    brctl \
+    cat \
+    cut \
+    grep \
+    head \
+    ip \
+    ls \
+    mdev \
+    mkdir \
+    mkfifo \
+    mount \
+    mv \
+    rm \
+    sed \
+    seq \
+    sh \
+    sleep \
+    tee \
+    tr \
+    udhcpd
 do
-  ln -s busybox "$rootfs_dir/bin/$i"
+    ln -s busybox "$rootfs_dir/bin/$i"
 done
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
 inst build/qemu/install/bin/qemu-system-i386 /bin/qemu
 for i in vgabios-{cirrus,stdvga}.bin efi-rtl8139.rom linuxboot.bin; do
-  inst build/qemu/install/share/qemu/$i /share/qemu/$i
+    inst build/qemu/install/share/qemu/$i /share/qemu/$i
 done
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
 inst "/usr/bin/xenstore-write" "/bin/xenstore-write"
@@ -60,10 +60,10 @@ inst "/usr/bin/xenstore-write" "/bin/xenstore-write"
 inst "/usr/bin/xenstore-watch" "/bin/xenstore-watch"
 # libgcc_s.so.1 is required by xenstore-watch for pthread:
 for i in /lib{64,/x86_64-linux-gnu}/libgcc_s.so.1; do
-  if [ -e "$i" ]; then
-    inst "$i"
-    break
-  fi
+    if [ -e "$i" ]; then
+        inst "$i"
+        break
+    fi
 done
 
 inst "/usr/bin/xenstore-rm" "/bin/xenstore-rm"
@@ -81,8 +81,8 @@ ln -s lib $rootfs_dir/lib64
 
 find "$rootfs_dir" -print0 | xargs -0 touch -ch -d @0
 (
-  cd "$rootfs_dir"
-  find . -print0 | \
-    LC_ALL=C sort -z | \
-    cpio --null -R 0:0 -H newc -o
+    cd "$rootfs_dir"
+    find . -print0 | \
+        LC_ALL=C sort -z | \
+        cpio --null -R 0:0 -H newc -o
 ) | gzip -n -9 > build/rootfs/stubdom-linux-rootfs
