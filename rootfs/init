@@ -65,7 +65,7 @@ fi
 mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
 if [ -f /tmp/cmdline.txt ]; then
     qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
-        $dm_args $kernel -append "$(cat /tmp/boot/cmdline.txt)" &
+        $dm_args $kernel -append "$(cat /tmp/cmdline.txt)" &
 else
     qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
         $dm_args $kernel &
