@@ -45,7 +45,9 @@ for i in \
     sleep \
     tee \
     tr \
-    udhcpd
+    udhcpd \
+    setsid \
+    cttyhack
 do
     ln -s busybox "$rootfs_dir/bin/$i"
 done

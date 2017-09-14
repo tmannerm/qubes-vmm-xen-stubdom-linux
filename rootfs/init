@@ -189,5 +189,7 @@ done
 ) &
 
 while true; do
-    sleep 1d
+    printf '==== Press enter for shell ====\n'
+    read
+    setsid cttyhack sh
 done
