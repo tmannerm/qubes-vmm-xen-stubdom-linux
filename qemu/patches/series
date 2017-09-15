@@ -8,3 +8,4 @@ fw_cfg-init.patch
 153eba47-ACPI-don-t-call-acpi_pcihp_device_plug_cb-on-xen.patch
 round-pci-region-sizes.patch
 6c808651-xen-platform-Cleanup-network-infrastructure-when-emu.patch
+stubdom-pci-addr-fix.patch

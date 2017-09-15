@@ -171,7 +171,7 @@ EOC
     fi
 
     qmp_req "$(cat <<EOC
-{"execute": "device_add", "arguments": {"driver": "xen-pci-passthrough", "id": "$qdev_id", "hostaddr": "$vdev",$addr_arg "permissive": $permissive}}
+{"execute": "device_add", "arguments": {"driver": "xen-pci-passthrough", "id": "$qdev_id", "hostaddr": "$vdev", "machine_addr": "$dev",$addr_arg "permissive": $permissive}}
 EOC
     )" > /dev/null
 
