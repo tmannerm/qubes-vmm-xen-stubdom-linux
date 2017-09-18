@@ -56,7 +56,6 @@ inst build/qemu/install/bin/qemu-system-i386 /bin/qemu
 inst build/qemu/pc-bios/optionrom/linuxboot.bin /share/qemu/linuxboot.bin
 inst build/qemu/pc-bios/vgabios-cirrus.bin /share/qemu/vgabios-cirrus.bin
 inst build/qemu/pc-bios/vgabios-stdvga.bin /share/qemu/vgabios-stdvga.bin
-inst build/qemu/pc-bios/efi-rtl8139.rom /share/qemu/efi-rtl8139.rom
 
 inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
 inst "/usr/bin/xenstore-write" "/bin/xenstore-write"

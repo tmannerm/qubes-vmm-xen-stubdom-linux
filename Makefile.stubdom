@@ -112,7 +112,7 @@ build/qemu/config.status: build/qemu/.patched
 		--prefix=
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
-	$(MAKE) -C build/qemu/roms seavgabios-{cirrus,stdvga} efi-rom-rtl8139
+	$(MAKE) -C build/qemu/roms seavgabios-{cirrus,stdvga}
 	$(MAKE) -C build/qemu/pc-bios/optionrom linuxboot.bin
 	$(MAKE) -C build/qemu
 
