@@ -22,6 +22,7 @@ BuildRequires: xen-devel
 BuildRequires: glib2-devel
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: edk2-tools
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel

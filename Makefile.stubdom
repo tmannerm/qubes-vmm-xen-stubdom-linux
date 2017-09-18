@@ -2,6 +2,8 @@ include Makefile.vars
 
 .PHONY: all install clean
 
+SHELL := bash
+
 VMLINUZ=build/linux/arch/x86/boot/bzImage
 ROOTFS_IMG=build/rootfs/stubdom-linux-rootfs
 
@@ -22,6 +24,7 @@ build/qemu/.extracted: dl/qemu-$(QEMU_VERSION).tar.xz
 	rm -rf build/qemu
 	mkdir -p build/qemu
 	tar -C build/qemu --strip-components=1 -xf $<
+	rm build/qemu/pc-bios/*.{rom,bin,dtb} # remove prebuild binaries
 	touch $@
 
 build/qemu/.patched: build/qemu/.extracted qemu/patches/series $(QEMU_PATCHES)
@@ -103,11 +106,14 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-opengl \
 		--disable-virglrenderer \
 		--disable-xfsctl \
+		--disable-blobs \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
 		--prefix=
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
+	$(MAKE) -C build/qemu/roms seavgabios-{cirrus,stdvga} efi-rom-rtl8139
+	$(MAKE) -C build/qemu/pc-bios/optionrom linuxboot.bin
 	$(MAKE) -C build/qemu
 
 LINUX_PATCHES := $(shell $Q -l linux)
