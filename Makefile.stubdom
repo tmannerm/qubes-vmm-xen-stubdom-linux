@@ -6,6 +6,7 @@ SHELL := bash
 
 VMLINUZ=build/linux/arch/x86/boot/bzImage
 ROOTFS_IMG=build/rootfs/stubdom-linux-rootfs
+SEABIOS=build/qemu/roms/seabios/builds/seabios-256k/bios.bin
 
 # Stubdom disk content
 STUBDOM_DISK_FILE= \
@@ -116,6 +117,9 @@ build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.
 	$(MAKE) -C build/qemu/pc-bios/optionrom linuxboot.bin
 	$(MAKE) -C build/qemu
 
+$(SEABIOS): build/qemu/.patched
+	$(MAKE) -C build/qemu/roms build-seabios-config-seabios-256k
+
 LINUX_PATCHES := $(shell $Q -l linux)
 
 build/linux/.extracted: dl/linux-$(LINUX_VERSION).tar.xz
@@ -157,9 +161,10 @@ export DRACUT_INSTALL
 $(ROOTFS_IMG): rootfs/gen $(STUBDOM_DISK_FILE)
 	env -u MAKELEVEL -u MAKEFLAGS -u MFLAGS ./$<
 
-install: $(VMLINUZ) $(ROOTFS_IMG)
+install: $(VMLINUZ) $(ROOTFS_IMG) $(SEABIOS)
 	install -D -m 444 $(VMLINUZ) $(DESTDIR)/usr/lib/xen/boot/stubdom-linux-kernel
 	install -m 444 $(ROOTFS_IMG) $(DESTDIR)/usr/lib/xen/boot/
+	install -m 444 $(SEABIOS) $(DESTDIR)/usr/lib/xen/boot/seabios-256k.bin
 
 clean:
 	rm -rf build

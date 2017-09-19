@@ -53,6 +53,7 @@ make -f Makefile.stubdom DESTDIR=${RPM_BUILD_ROOT} install
 %files
 /usr/lib/xen/boot/stubdom-linux-rootfs
 /usr/lib/xen/boot/stubdom-linux-kernel
+/usr/lib/xen/boot/seabios-256k.bin
 
 
 %changelog
