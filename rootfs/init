@@ -26,7 +26,7 @@ interface br0
 
 lease_file /dev/null
 
-opt dns $net_prefix.1 $net_prefix.254
+opt dns 10.138.1.1 10.139.1.2
 opt subnet 255.255.255.0
 opt router $net_prefix.1
 EOC
