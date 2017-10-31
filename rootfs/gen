@@ -57,10 +57,12 @@ inst build/qemu/pc-bios/optionrom/linuxboot.bin /share/qemu/linuxboot.bin
 inst build/qemu/pc-bios/vgabios-cirrus.bin /share/qemu/vgabios-cirrus.bin
 inst build/qemu/pc-bios/vgabios-stdvga.bin /share/qemu/vgabios-stdvga.bin
 
-inst "/usr/bin/xenstore-read" "/bin/xenstore-read"
-inst "/usr/bin/xenstore-write" "/bin/xenstore-write"
+inst /usr/bin/xenstore-read /bin/xenstore-read
 
-inst "/usr/bin/xenstore-watch" "/bin/xenstore-watch"
+for i in write watch rm; do
+    ln -s xenstore-read "$rootfs_dir/bin/xenstore-$i"
+done
+
 # libgcc_s.so.1 is required by xenstore-watch for pthread:
 for i in /lib{64,/x86_64-linux-gnu}/libgcc_s.so.1; do
     if [ -e "$i" ]; then
@@ -69,7 +71,6 @@ for i in /lib{64,/x86_64-linux-gnu}/libgcc_s.so.1; do
     fi
 done
 
-inst "/usr/bin/xenstore-rm" "/bin/xenstore-rm"
 inst "rootfs/qemu-ifup" "/etc/qemu-ifup"
 inst "rootfs/qemu-ifdown" "/etc/qemu-ifdown"
 inst "rootfs/init" "/init"
