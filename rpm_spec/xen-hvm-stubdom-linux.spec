@@ -12,6 +12,8 @@ Group: System
 License: GPL
 URL: https://www.qubes-os.org/
 
+Requires: xen-libs >= 2001:4.8.2-10
+
 BuildRequires: quilt
 
 # QEMU
@@ -33,7 +35,7 @@ BuildRequires: qubes-libvchan-xen-devel
 BuildRequires: bc
 
 # rootfs
-BuildRequires: xen-runtime
+BuildRequires: xen-runtime >= 2001:4.8.2-10
 BuildRequires: busybox
 BuildRequires: dracut
 
