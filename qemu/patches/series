@@ -11,3 +11,4 @@ round-pci-region-sizes.patch
 disable-nic-option-rom.patch
 stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
+xen-pt-Set-is_express-to-avoid-out-of-bounds-write.patch
