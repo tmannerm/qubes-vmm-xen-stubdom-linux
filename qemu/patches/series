@@ -12,3 +12,5 @@ disable-nic-option-rom.patch
 stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
 xen-pt-Set-is_express-to-avoid-out-of-bounds-write.patch
+73c6e401-rcu-completely-disable-pthread_atfork-callbacks-as-s.patch
+2a96a552-Revert-rcu-do-not-create-thread-in-pthread_atfork-ca.patch
