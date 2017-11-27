@@ -1,6 +1,6 @@
---- a/xen-hvm.c
-+++ b/xen-hvm.c
-@@ -1238,6 +1238,10 @@ void xen_hvm_init(PCMachineState *pcms,
+--- a/hw/i386/xen/xen-hvm.c
++++ b/hw/i386/xen/xen-hvm.c
+@@ -1273,6 +1273,10 @@ void xen_hvm_init(PCMachineState *pcms,
      state->wakeup.notify = xen_wakeup_notifier;
      qemu_register_wakeup_notifier(&state->wakeup);
  
@@ -8,10 +8,10 @@
 +        xc_set_hvm_param(xen_xc, xen_domid, HVM_PARAM_DM_DOMAIN, DOMID_SELF);
 +    }
 +
-     rc = xen_get_ioreq_server_info(xen_xc, xen_domid, state->ioservid,
+     rc = xen_get_ioreq_server_info(xen_domid, state->ioservid,
                                     &ioreq_pfn, &bufioreq_pfn,
                                     &bufioreq_evtchn);
-@@ -1333,12 +1337,21 @@ void xen_hvm_init(PCMachineState *pcms,
+@@ -1372,12 +1376,21 @@ void xen_hvm_init(PCMachineState *pcms,
      state->device_listener = xen_device_listener;
      device_listener_register(&state->device_listener);
  

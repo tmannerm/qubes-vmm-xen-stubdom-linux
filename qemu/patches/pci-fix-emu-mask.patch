@@ -1,6 +1,6 @@
 --- a/hw/xen/xen_pt_config_init.c
 +++ b/hw/xen/xen_pt_config_init.c
-@@ -1954,7 +1954,7 @@ static void xen_pt_config_reg_init(XenPC
+@@ -1955,7 +1955,7 @@ static void xen_pt_config_reg_init(XenPC
              /* Mask out host (including past size). */
              new_val = val & host_mask;
              /* Merge emulated ones (excluding the non-emulated ones). */

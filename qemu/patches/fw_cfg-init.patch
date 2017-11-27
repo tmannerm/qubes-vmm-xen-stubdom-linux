@@ -1,6 +1,6 @@
 --- a/hw/i386/pc_piix.c
 +++ b/hw/i386/pc_piix.c
-@@ -179,6 +179,15 @@ static void pc_init1(MachineState *machi
+@@ -181,6 +181,15 @@ static void pc_init1(MachineState *machi
      } else if (machine->kernel_filename != NULL) {
          /* For xen HVM direct kernel boot, load linux here */
          xen_load_linux(pcms);

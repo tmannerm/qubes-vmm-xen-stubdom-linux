@@ -108,6 +108,11 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-virglrenderer \
 		--disable-xfsctl \
 		--disable-blobs \
+		--disable-tcg \
+		--disable-crypto-afalg \
+		--disable-live-block-migration \
+		--disable-vxhs \
+		--disable-vhost-user \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
 		--prefix=
