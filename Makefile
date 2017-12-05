@@ -15,8 +15,14 @@ URLS := \
     http://download.qemu-project.org/qemu-$(QEMU_VERSION).tar.xz.sig \
     https://kernel.org/pub/linux/kernel/v$(firstword $(subst ., ,$(LINUX_VERSION))).x/linux-$(LINUX_VERSION).tar.sign
 
-ALL_FILES := $(addprefix dl/,$(notdir $(patsubst %.sign,%.xz,$(patsubst %.sig,%,$(URLS))) $(filter %.sig, $(URLS)) $(filter %.sign, $(URLS))))
 ALL_URLS := $(patsubst %.sign,%.xz,$(patsubst %.sig,%,$(URLS))) $(filter %.sig, $(URLS)) $(filter %.sign, $(URLS))
+ALL_FILES_TMP := $(notdir $(ALL_URLS))
+
+ifneq ($(DISTFILES_MIRROR),)
+ALL_URLS := $(addprefix $(DISTFILES_MIRROR),$(ALL_FILES_TMP))
+endif
+
+ALL_FILES := $(addprefix dl/,$(ALL_FILES_TMP))
 
 $(filter %.sig, $(ALL_FILES)) $(filter %.sign, $(ALL_FILES)): dl/%:
 	@mkdir -p dl
