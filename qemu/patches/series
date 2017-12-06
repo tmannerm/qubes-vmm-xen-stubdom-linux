@@ -4,13 +4,8 @@ qemu-xen-hvm.patch
 qubes-gui-agent.patch
 disable-msix-caps.patch
 fw_cfg-init.patch
-38bb54f3-replication-Make-disable-replication-compile-again.patch
-153eba47-ACPI-don-t-call-acpi_pcihp_device_plug_cb-on-xen.patch
 round-pci-region-sizes.patch
-6c808651-xen-platform-Cleanup-network-infrastructure-when-emu.patch
 disable-nic-option-rom.patch
 stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
 xen-pt-Set-is_express-to-avoid-out-of-bounds-write.patch
-73c6e401-rcu-completely-disable-pthread_atfork-callbacks-as-s.patch
-2a96a552-Revert-rcu-do-not-create-thread-in-pthread_atfork-ca.patch

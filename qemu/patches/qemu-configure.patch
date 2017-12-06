@@ -1,14 +1,14 @@
 --- a/configure
 +++ b/configure
-@@ -277,6 +277,7 @@ rbd=""
+@@ -357,6 +357,7 @@ rbd=""
  smartcard=""
  libusb=""
  usb_redir=""
 +stubdom="no"
  opengl=""
  opengl_dmabuf="no"
- avx2_opt="no"
-@@ -1072,6 +1073,8 @@ for opt do
+ cpuid_h="no"
+@@ -1164,6 +1165,8 @@ for opt do
    ;;
    --enable-usb-redir) usb_redir="yes"
    ;;
@@ -17,7 +17,7 @@
    --disable-zlib-test) zlib="no"
    ;;
    --disable-lzo) lzo="no"
-@@ -1410,6 +1413,7 @@ disabled with --disable-FEATURE, default
+@@ -1516,6 +1519,7 @@ disabled with --disable-FEATURE, default
    usb-redir       usb network redirection support
    lzo             support of lzo compression library
    snappy          support of snappy compression library
@@ -25,7 +25,7 @@
    bzip2           support of bzip2 compression library
                    (for reading bzip2-compressed dmg images)
    seccomp         seccomp support
-@@ -5087,6 +5091,7 @@ if test "$xen" = "yes" ; then
+@@ -5340,6 +5344,7 @@ if test "$xen" = "yes" ; then
    echo "xen ctrl version  $xen_ctrl_version"
    echo "pv dom build      $xen_pv_domain_build"
  fi
@@ -33,7 +33,7 @@
  echo "brlapi support    $brlapi"
  echo "bluez  support    $bluez"
  echo "Documentation     $docs"
-@@ -5628,6 +5633,11 @@ if test "$rbd" = "yes" ; then
+@@ -5889,6 +5894,11 @@ if test "$rbd" = "yes" ; then
    echo "RBD_LIBS=$rbd_libs" >> $config_host_mak
  fi
  
