@@ -16,6 +16,8 @@ if test -e /sys/class/net/eth0; then
     brctl addif br0 eth0
     ip link set br0 up
     client_ip=$(xenstore-read $(xenstore-read device/vif/0/backend)/ip)
+    # use only the first address
+    client_ip=${client_ip%% *}
     net_prefix="${client_ip%.*}"
     udhcpd -f -I $net_prefix.1 - <<EOC &
 start $client_ip
