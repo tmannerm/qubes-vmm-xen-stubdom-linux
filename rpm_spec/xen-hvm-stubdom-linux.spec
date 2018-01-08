@@ -28,7 +28,7 @@ BuildRequires: edk2-tools
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
-BuildRequires: qubes-kernel-vm-support >= 4.0.4
+BuildRequires: qubes-kernel-vm-support > 3.2.5
 BuildRequires: qubes-libvchan-xen-devel
 
 # Linux
