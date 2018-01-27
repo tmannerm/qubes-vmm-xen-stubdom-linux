@@ -1,3 +1,5 @@
+%define QEMU_VERSION 2.10.1
+%define LINUX_VERSION 4.9.65
 
 Name: xen-hvm-stubdom-linux
 Version: @VERSION@
@@ -36,6 +38,8 @@ BuildRequires: busybox
 BuildRequires: dracut
 
 Source0: %{name}-%{version}.tar.gz
+Source1: linux-%{LINUX_VERSION}.tar.xz
+Source2: qemu-%{QEMU_VERSION}.tar.xz
 
 %description
 This package contains the files (i.e. kernel and rootfs) for a Linux based
