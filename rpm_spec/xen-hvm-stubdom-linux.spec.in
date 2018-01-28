@@ -46,6 +46,8 @@ Source0: %{name}-%{version}.tar.gz
 Source1: linux-%{LINUX_VERSION}.tar.xz
 Source2: qemu-%{QEMU_VERSION}.tar.xz
 
+%define debug_package %{nil}
+
 %description
 This package contains the files (i.e. kernel and rootfs) for a Linux based
 stubdom.
