@@ -45,6 +45,7 @@ BuildRequires: dracut
 This package contains the files (i.e. kernel and rootfs) for a Linux based
 stubdom.
 
+
 %build
 make -f Makefile.stubdom %{?_smp_mflags}
 
