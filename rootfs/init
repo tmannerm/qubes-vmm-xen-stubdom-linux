@@ -59,10 +59,23 @@ fi
 
 mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
 
+(
+set +x
+# Clear kernel log buffer to avoid leaking kaslr layout information
+# Messages are still written to xen console
+echo "Clearing kmsg buffer..." > /dev/kmsg
+while read -r line; do
+    if [ $(echo "$line" | grep -cim1 "Clearing kmsg buffer...") -eq 1 ]; then
+        break
+    fi
+done < /proc/kmsg
+) &
+
 # $dm_args and $kernel are separated with \x1b to allow for spaces in arguments.
 IFS=$'\x1b'
 set -f
-qemu -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
+qemu -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=allow,resourcecontrol=deny \
+-chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
     $dm_args $kernel &
 set +f
 unset IFS

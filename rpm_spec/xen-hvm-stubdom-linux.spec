@@ -25,6 +25,7 @@ BuildRequires: glib2-devel
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: edk2-tools
+BuildRequires: libseccomp-devel
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
@@ -33,6 +34,7 @@ BuildRequires: qubes-libvchan-xen-devel
 
 # Linux
 BuildRequires: bc
+BuildRequires: gcc-plugin-devel
 
 # rootfs
 BuildRequires: xen-runtime >= 2001:4.8.2-10
@@ -42,7 +44,6 @@ BuildRequires: dracut
 %description
 This package contains the files (i.e. kernel and rootfs) for a Linux based
 stubdom.
-
 
 %build
 make -f Makefile.stubdom %{?_smp_mflags}
