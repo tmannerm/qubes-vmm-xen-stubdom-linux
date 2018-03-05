@@ -26,6 +26,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: edk2-tools
 BuildRequires: libseccomp-devel
+BuildRequires: pixman-devel
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
@@ -34,6 +35,8 @@ BuildRequires: qubes-libvchan-xen-devel
 
 # Linux
 BuildRequires: bc
+# gcc with support for BTI mitigation
+BuildRequires: gcc >= 6.4.1-1.qubes1
 BuildRequires: gcc-plugin-devel
 
 # rootfs
