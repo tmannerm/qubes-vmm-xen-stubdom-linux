@@ -23,6 +23,7 @@ BuildRequires: glib2-devel
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: edk2-tools
+BuildRequires: libtool
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
@@ -36,6 +37,10 @@ BuildRequires: bc
 BuildRequires: xen-runtime >= 2001:4.8.2-10
 BuildRequires: busybox
 BuildRequires: dracut
+
+%if 0%{?fedora} == 25
+BuildRequires: gcc-c++ >= 6.4.1-1.qubes1
+%endif
 
 Source0: %{name}-%{version}.tar.gz
 Source1: linux-%{LINUX_VERSION}.tar.xz
