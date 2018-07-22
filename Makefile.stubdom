@@ -55,7 +55,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-bluez \
 		--disable-libusb \
 		--disable-slirp \
-		--disable-pie \
+		--enable-pie \
 		--disable-docs \
 		--disable-vhost-net \
 		--disable-spice \
@@ -87,7 +87,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-lzo \
 		--disable-snappy \
 		--disable-bzip2 \
-		--disable-seccomp \
+		--enable-seccomp \
 		--disable-coroutine-pool \
 		--disable-glusterfs \
 		--disable-tpm \
@@ -115,6 +115,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-vhost-user \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
+		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack" \
 		--prefix=
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
