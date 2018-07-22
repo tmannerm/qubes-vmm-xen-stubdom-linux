@@ -1,5 +1,5 @@
-%define QEMU_VERSION 2.10.1
-%define LINUX_VERSION 4.9.65
+%define QEMU_VERSION 2.11.2
+%define LINUX_VERSION 4.14.57
 
 Name: xen-hvm-stubdom-linux
 Version: @VERSION@
