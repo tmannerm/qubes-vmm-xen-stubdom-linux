@@ -6,7 +6,8 @@ include $(ORIG_SRC)/Makefile.vars
 
 INCLUDED_SOURCES = \
 	qemu-$(QEMU_VERSION).tar.xz \
-	linux-$(LINUX_VERSION).tar.xz
+	linux-$(LINUX_VERSION).tar.xz \
+	busybox-$(BUSYBOX_VERSION).tar.bz2
 
 ifneq ($(filter $(DISTRIBUTION), fedora centos),)
 SOURCE_COPY_IN := $(INCLUDED_SOURCES)

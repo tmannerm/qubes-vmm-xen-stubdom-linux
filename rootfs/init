@@ -227,5 +227,5 @@ done
 while true; do
     printf '==== Press enter for shell ====\n'
     read
-    setsid cttyhack sh
+    setsid /bin/cttyhack /bin/sh
 done

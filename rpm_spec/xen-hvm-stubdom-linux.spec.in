@@ -1,5 +1,6 @@
 %define QEMU_VERSION 3.0.0
 %define LINUX_VERSION 4.14.68
+%define BUSYBOX_VERSION 1.29.2
 
 Name: xen-hvm-stubdom-linux
 Version: @VERSION@
@@ -33,15 +34,20 @@ BuildRequires: qubes-libvchan-xen-devel
 
 # Linux
 BuildRequires: bc
+BuildRequires: bison
+BuildRequires: flex
 # gcc with support for BTI mitigation
 %if 0%{?fedora} == 25
 BuildRequires: gcc >= 6.4.1-1.qubes1
 %endif
 BuildRequires: gcc-plugin-devel
 
+# Busybox
+BuildRequires: libselinux-devel >= 1.27.7-2
+BuildRequires: libsepol-devel
+
 # rootfs
 BuildRequires: xen-runtime >= 2001:4.8.2-10
-BuildRequires: busybox
 BuildRequires: dracut
 BuildRequires: inotify-tools
 
@@ -52,6 +58,7 @@ BuildRequires: gcc-c++ >= 6.4.1-1.qubes1
 Source0: %{name}-%{version}.tar.gz
 Source1: linux-%{LINUX_VERSION}.tar.xz
 Source2: qemu-%{QEMU_VERSION}.tar.xz
+Source3: busybox-%{BUSYBOX_VERSION}.tar.bz2
 
 %define debug_package %{nil}
 
@@ -59,9 +66,10 @@ Source2: qemu-%{QEMU_VERSION}.tar.xz
 This package contains the files (i.e. kernel and rootfs) for a Linux based
 stubdom.
 
+
 %prep
 %setup -q
-cp %{SOURCE1} %{SOURCE2} .
+cp %{SOURCE1} %{SOURCE2} %{SOURCE3} .
 
 
 %build

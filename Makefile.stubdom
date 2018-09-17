@@ -10,6 +10,7 @@ SEABIOS=build/qemu/roms/seabios/builds/seabios-256k/bios.bin
 
 # Stubdom disk content
 STUBDOM_DISK_FILE= \
+  build/busybox/busybox \
   build/qemu/i386-softmmu/qemu-system-i386 \
   rootfs/init \
   rootfs/qemu-ifup \
@@ -18,6 +19,22 @@ STUBDOM_DISK_FILE= \
 Q=scripts/quilt-wrapper
 
 all: $(VMLINUZ) $(ROOTFS_IMG)
+
+build/busybox/.extracted: busybox-$(BUSYBOX_VERSION).tar.bz2
+	rm -rf build/busybox
+	mkdir -p build/busybox
+	tar -C build/busybox --strip-components=1 -xf $<
+	touch $@
+
+build/busybox/config.status: build/busybox/.extracted
+	cp busybox/busybox.config build/busybox/.config
+	yes "" | $(MAKE) -C build/busybox oldconfig
+	touch $@
+
+build/busybox/busybox: build/busybox/config.status
+	$(MAKE) -C build/busybox
+	strip --strip-unneeded build/busybox/busybox_unstripped
+	mv build/busybox/busybox_unstripped build/busybox/busybox
 
 QEMU_PATCHES := $(shell $Q -l qemu)
 
