@@ -5,6 +5,8 @@ set -x
 mount -t devtmpfs none /dev
 mount -t sysfs /sys /sys
 mount -t proc /proc /proc
+mount -t tmpfs -o size=1m /tmp /tmp
+mount -o remount,ro /
 
 echo 1 > /proc/sys/vm/overcommit_memory
 
@@ -57,7 +59,31 @@ if [ -b /dev/xvdd ]; then
     fi
 fi
 
-mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out
+mkfifo /tmp/qmp/qemu.in /tmp/qmp/qemu.out /tmp/qmp/qemu_res.out
+
+(
+set +x
+cat /tmp/qmp/qemu.out | tee /tmp/qmp/qemu_res.out | \
+while IFS= read -r line; do
+    if [ $(echo "\\${line}" | grep -cim1 '"event": "DEVICE_DELETED", "data": {"device": "nic0",') -eq 1 ]; then
+        /etc/qemu-ifdown
+    fi
+done
+) &
+
+(
+set +x
+if [ $(echo "$dm_args" | grep -cim1 "ifname=") -eq 1 ]; then
+    VIFNAME=$(echo "$dm_args" | sed -n -e 's/^.*ifname=//p' | sed -n -e 's/,.*$//p')
+    while true; do
+        if [ $(ip link | grep -cim1 "$VIFNAME") -eq 1 ]; then
+            break
+        fi
+        sleep 0.1
+    done
+    /etc/qemu-ifup "$VIFNAME"
+fi
+) &
 
 (
 set +x
@@ -74,7 +100,7 @@ done < /proc/kmsg
 # $dm_args and $kernel are separated with \x1b to allow for spaces in arguments.
 IFS=$'\x1b'
 set -f
-qemu -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=allow,resourcecontrol=deny \
+qemu -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
     $dm_args $kernel &
 set +f
@@ -111,7 +137,7 @@ while true; do
     echo "$line" > /tmp/qmp/new-res
     mv /tmp/qmp/new-res /tmp/qmp/res/$id
 done
-) >/tmp/qmp/qemu.in </tmp/qmp/qemu.out &
+) >/tmp/qmp/qemu.in </tmp/qmp/qemu_res.out &
 
 qmp_req() {
     local id=$(cat /proc/sys/kernel/random/uuid)
