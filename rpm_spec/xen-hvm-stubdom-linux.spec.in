@@ -43,6 +43,7 @@ BuildRequires: gcc-plugin-devel
 BuildRequires: xen-runtime >= 2001:4.8.2-10
 BuildRequires: busybox
 BuildRequires: dracut
+BuildRequires: inotify-tools
 
 %if 0%{?fedora} == 25
 BuildRequires: gcc-c++ >= 6.4.1-1.qubes1

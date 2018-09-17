@@ -92,7 +92,8 @@ echo "$line" >&2
 while true; do
     id=$(ls -t /tmp/qmp/req | head -n 1)
     if [ "$id" = "" ]; then
-        sleep 0.1
+        sleep 0.1; if [ -n "$(ls -t /tmp/qmp/req)" ]; then touch /tmp/qmp/req; fi &
+        inotifywait -e attrib,create,delete,modify,move /tmp/qmp/req > /dev/null 2>&1
         continue
     fi
 
