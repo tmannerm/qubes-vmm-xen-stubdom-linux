@@ -1,4 +1,4 @@
-%define QEMU_VERSION 2.11.2
+%define QEMU_VERSION 3.0.0
 %define LINUX_VERSION 4.14.68
 
 Name: xen-hvm-stubdom-linux
@@ -18,7 +18,6 @@ BuildRequires: quilt
 BuildRequires: python
 BuildRequires: zlib-devel
 BuildRequires: xen-devel
-BuildRequires: xen-devel
 BuildRequires: glib2-devel
 BuildRequires: autoconf
 BuildRequires: automake
@@ -35,7 +34,9 @@ BuildRequires: qubes-libvchan-xen-devel
 # Linux
 BuildRequires: bc
 # gcc with support for BTI mitigation
+%if 0%{?fedora} == 25
 BuildRequires: gcc >= 6.4.1-1.qubes1
+%endif
 BuildRequires: gcc-plugin-devel
 
 # rootfs

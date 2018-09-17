@@ -1,6 +1,6 @@
 --- a/hw/i386/xen/xen-hvm.c
 +++ b/hw/i386/xen/xen-hvm.c
-@@ -1273,6 +1273,10 @@ void xen_hvm_init(PCMachineState *pcms,
+@@ -1405,6 +1405,10 @@ void xen_hvm_init(PCMachineState *pcms,
      state->wakeup.notify = xen_wakeup_notifier;
      qemu_register_wakeup_notifier(&state->wakeup);
  
@@ -8,11 +8,11 @@
 +        xc_set_hvm_param(xen_xc, xen_domid, HVM_PARAM_DM_DOMAIN, DOMID_SELF);
 +    }
 +
-     rc = xen_get_ioreq_server_info(xen_domid, state->ioservid,
-                                    &ioreq_pfn, &bufioreq_pfn,
-                                    &bufioreq_evtchn);
-@@ -1372,12 +1376,21 @@ void xen_hvm_init(PCMachineState *pcms,
-     state->device_listener = xen_device_listener;
+     rc = xen_map_ioreq_server(state);
+     if (rc < 0) {
+         goto err;
+@@ -1479,12 +1479,20 @@ void xen_hvm_init(PCMachineState *pcms,
+     QLIST_INIT(&state->dev_list);
      device_listener_register(&state->device_listener);
  
 +#ifndef CONFIG_STUBDOM
@@ -29,7 +29,6 @@
 +        goto err;
 +    }
 +#endif
-+
-     xen_read_physmap(state);
  
-     /* Disable ACPI build because Xen handles it */
+     QLIST_INIT(&xen_physmap);
+     xen_read_physmap(state);

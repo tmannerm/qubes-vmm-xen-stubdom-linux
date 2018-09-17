@@ -113,6 +113,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-live-block-migration \
 		--disable-vxhs \
 		--disable-vhost-user \
+		--disable-vhost-crypto \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
 		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack" \
