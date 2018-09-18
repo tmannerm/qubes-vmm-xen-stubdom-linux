@@ -2,4 +2,5 @@
 
 echo "$0 $*"
 
+sleep 3
 xenstore-rm device/vif/0
