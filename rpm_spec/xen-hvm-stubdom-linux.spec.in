@@ -1,6 +1,6 @@
 %define QEMU_VERSION 3.0.0
 %define LINUX_VERSION 4.14.68
-%define BUSYBOX_VERSION 1.29.2
+%define BUSYBOX_VERSION 1.29.3
 
 Name: xen-hvm-stubdom-linux
 Version: @VERSION@
