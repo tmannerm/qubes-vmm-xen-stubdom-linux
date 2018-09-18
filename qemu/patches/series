@@ -8,3 +8,4 @@ round-pci-region-sizes.patch
 disable-nic-option-rom.patch
 stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
+additional-seccomp-filters.patch

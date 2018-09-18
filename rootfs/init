@@ -5,7 +5,7 @@ set -x
 mount -t devtmpfs none /dev
 mount -t sysfs /sys /sys
 mount -t proc /proc /proc
-mount -t tmpfs -o size=1m /tmp /tmp
+mount -t tmpfs -o size=1m,nodev,noexec /tmp /tmp
 mount -o remount,ro /
 
 echo 1 > /proc/sys/vm/overcommit_memory
