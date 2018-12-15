@@ -1,6 +1,4 @@
 /dl/
-qemu-*.tar.*
-linux-*.tar.*
 /build/
 *.swp
 /pkgs/
