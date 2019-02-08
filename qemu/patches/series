@@ -8,6 +8,7 @@ round-pci-region-sizes.patch
 disable-nic-option-rom.patch
 stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
+use_physdevop_for_msi_enable.patch
 6f2231e-seccomp-use-SIGSYS-signal-instead-of-killing-the-thread.patch
 bda08a5-seccomp-prefer-SCMP_ACT_KILL_PROCESS-if-available.patch
 70dfabe-seccomp-set-the-seccomp-filter-to-all-threads.patch
