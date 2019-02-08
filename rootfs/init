@@ -106,11 +106,15 @@ done < /proc/kmsg
 
 # setup FD 3 and 4 for migration stream (incoming, outgoing), actual qemu
 # options are controlled by the toolstack
-if exec 3</dev/hvc2; then
-    stty raw -echo -echoctl <&3
+if xenstore-read device/console/2 >/dev/null 2>&1; then
+    if exec 3</dev/hvc2; then
+        stty raw -echo -echoctl <&3
+    fi
 fi
-if exec 4>/dev/hvc1; then
-    stty raw -echo -echoctl <&4
+if xenstore-read device/console/1 >/dev/null 2>&1; then
+    if exec 4>/dev/hvc1; then
+        stty raw -echo -echoctl <&4
+    fi
 fi
 # $dm_args and $kernel are separated with \n to allow for spaces in arguments.
 IFS=$'\n'
@@ -124,15 +128,18 @@ unset IFS
 
 qemu_pid=$!
 
-qmp_hello=$'{"execute":"qmp_capabilities","id":1}\r\n'
-qmp_addfd=$'{"execute":"add-fd", "arguments": { "fdset-id": 1 }, "id":42 }\r\n'
 
 while [ ! -e /tmp/qemu.qmp ]; do sleep 0.1; done
-add-fd /tmp/qemu.qmp /dev/fd/4 "$qmp_hello$qmp_addfd" "42"
+if [ -e /dev/fd/4 ]; then
+    qmp_hello=$'{"execute":"qmp_capabilities","id":1}\r\n'
+    qmp_addfd=$'{"execute":"add-fd", "arguments": { "fdset-id": 1 }, "id":42 }\r\n'
+    add-fd /tmp/qemu.qmp /dev/fd/4 "$qmp_hello$qmp_addfd" "42"
+    exec 4>&-
+fi
 
-exec 3<&-
-exec 4>&-
-
+if [ -e /dev/fd/3 ]; then
+    exec 3<&-
+fi
 
 # FIXME: this assume dom0 as toolstack domain
 vchan-socket-proxy 0 $device_model/qmp-vchan /tmp/qemu.qmp &
