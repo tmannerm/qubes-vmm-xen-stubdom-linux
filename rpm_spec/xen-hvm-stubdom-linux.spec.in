@@ -41,6 +41,7 @@ BuildRequires: flex
 BuildRequires: gcc >= 6.4.1-1.qubes1
 %endif
 BuildRequires: gcc-plugin-devel
+BuildRequires: gcc-c++
 
 # Busybox
 BuildRequires: libselinux-devel >= 1.27.7-2
