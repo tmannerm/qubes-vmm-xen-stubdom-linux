@@ -13,7 +13,6 @@ Building
    - python
    - zlib-devel
    - xen-devel
-   - xen-devel
    - glib2-devel
    - autoconf
    - automake
@@ -22,13 +21,18 @@ Building
    - libseccomp-devel >= 2.3.0
    - pixman-devel
    - xen-devel
+   - qubes-gui-common-devel
+   - qubes-libvchan-xen-devel
 
    - bc
    - gcc-plugin-devel
+   - gcc-c++
+   - quilt
 
    - xen-runtime
    - busybox
    - dracut
+   - inotify-tools
 
 2. Build the thing:
 
