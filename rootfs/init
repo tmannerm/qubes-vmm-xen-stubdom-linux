@@ -10,6 +10,8 @@ mount -o remount,ro /
 
 echo 1 > /proc/sys/vm/overcommit_memory
 
+printf "%d\n" "$((2**30))" > /sys/module/xen_gntalloc/parameters/limit
+
 if test -e /sys/class/net/eth0; then
     ip link set eth0 address fe:ff:ff:ff:ff:fe
     ip addr flush eth0
