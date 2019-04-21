@@ -77,12 +77,12 @@ make -f Makefile.stubdom %{?_smp_mflags}
 
 
 %install
-make -f Makefile.stubdom DESTDIR=${RPM_BUILD_ROOT} install
+make -f Makefile.stubdom DESTDIR=${RPM_BUILD_ROOT} STUBDOM_BINDIR=/usr/libexec/xen/boot install
 
 
 %files
-/usr/lib/xen/boot/stubdom-linux-rootfs
-/usr/lib/xen/boot/stubdom-linux-kernel
+/usr/libexec/xen/boot/stubdom-linux-rootfs
+/usr/libexec/xen/boot/stubdom-linux-kernel
 
 
 %changelog
