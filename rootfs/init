@@ -53,7 +53,7 @@ device_model="device-model/$target"
 mkdir /tmp/qmp
 
 kernel=
-if [ -b /dev/xvdd ]; then
+if echo "$dm_args" | grep -q '^-append' && [ -b /dev/xvdd ]; then
     mkdir /tmp/boot
     mount /dev/xvdd /tmp/boot -o ro
     if [ -f /tmp/boot/vmlinuz ]; then
