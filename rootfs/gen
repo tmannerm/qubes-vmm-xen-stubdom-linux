@@ -93,7 +93,7 @@ done
 unset IFS
 mv $rootfs_dir/lib{.new,}
 touch $rootfs_dir/etc/ld.so.conf
-/sbin/ldconfig -r $rootfs_dir
+/sbin/ldconfig -r $rootfs_dir /lib
 ln -s lib $rootfs_dir/lib64
 
 find "$rootfs_dir" -print0 | xargs -0 touch -ch -d @0
