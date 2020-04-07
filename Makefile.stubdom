@@ -22,13 +22,22 @@ Q=scripts/quilt-wrapper
 
 all: $(VMLINUZ) $(ROOTFS_IMG)
 
+BUSYBOX_PATCHES := $(shell $Q -l busybox)
+
 build/busybox/.extracted: busybox-$(BUSYBOX_VERSION).tar.bz2
 	rm -rf build/busybox
 	mkdir -p build/busybox
 	tar -C build/busybox --strip-components=1 -xf $<
 	touch $@
 
-build/busybox/config.status: build/busybox/.extracted
+build/busybox/.patched: build/busybox/.extracted busybox/patches/series $(BUSYBOX_PATCHES)
+	$Q -C build/busybox -. pop -a
+	rm -rf build/busybox/.patches
+	cp -aL busybox/patches build/busybox/.patches
+	$Q -C build/busybox -. push -a
+	touch $@
+
+build/busybox/config.status: build/busybox/.patched
 	cp busybox/busybox.config build/busybox/.config
 	yes "" | $(MAKE) -C build/busybox oldconfig
 	touch $@
