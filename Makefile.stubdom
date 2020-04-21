@@ -119,7 +119,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-coroutine-pool \
 		--disable-glusterfs \
 		--disable-tpm \
-		--disable-libssh2 \
+		--disable-libssh \
 		--disable-numa \
 		--disable-tcmalloc \
 		--disable-jemalloc \

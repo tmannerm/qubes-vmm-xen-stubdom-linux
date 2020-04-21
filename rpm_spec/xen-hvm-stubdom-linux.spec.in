@@ -1,4 +1,4 @@
-%define QEMU_VERSION 3.0.0
+%define QEMU_VERSION 4.2.0
 %define LINUX_VERSION 5.4.30
 %define BUSYBOX_VERSION 1.31.1
 

@@ -12,7 +12,7 @@
 +        fw_cfg = fw_cfg_init_io(FW_CFG_IO_BASE);
 +        rom_set_fw(fw_cfg);
 +
-+        pcms->fw_cfg = fw_cfg;
++        x86ms->fw_cfg = fw_cfg;
      }
  
      gsi_state = g_malloc0(sizeof(*gsi_state));
