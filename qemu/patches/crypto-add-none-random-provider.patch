@@ -1,0 +1,136 @@
+From 18c75d0db3c6ca9566a90a5220914b640f052cda Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Marczykowski-G=C3=B3recki?=
+ <marmarek@invisiblethingslab.com>
+Date: Wed, 20 May 2020 14:19:50 +0200
+Subject: [PATCH] crypto: add "none" random provider
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Organization: Invisible Things Lab
+Cc: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+
+In case of not using random-number needing feature, it makes sense to
+skip RNG init too. This is especially helpful when QEMU is sandboxed in
+Stubdomain under Xen, where there is very little entropy so initial
+getrandom() call delays the startup several seconds. In that setup, no
+random bytes are needed at all.
+
+Signed-off-by: Marek Marczykowski-Górecki <marmarek@invisiblethingslab.com>
+---
+ configure            | 11 +++++++++++
+ crypto/Makefile.objs |  3 ++-
+ crypto/random-none.c | 38 ++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 51 insertions(+), 1 deletion(-)
+ create mode 100644 crypto/random-none.c
+
+diff --git a/configure b/configure
+index 6099be1d84..e108dd2da0 100755
+--- a/configure
++++ b/configure
+@@ -504,6 +504,7 @@ debug_mutex="no"
+ libpmem=""
+ default_devices="yes"
+ plugins="no"
++rng_none="no"
+ 
+ supported_cpu="no"
+ supported_os="no"
+@@ -1539,6 +1540,10 @@ for opt do
+   ;;
+   --disable-plugins) plugins="no"
+   ;;
++  --enable-rng-none) rng_none=yes
++  ;;
++  --disable-rng-none) rng_none=no
++  ;;
+   *)
+       echo "ERROR: unknown option $opt"
+       echo "Try '$0 --help' for more information"
+@@ -1825,6 +1830,7 @@ disabled with --disable-FEATURE, default is enabled if available:
+   debug-mutex     mutex debugging support
+   libpmem         libpmem support
+   xkbcommon       xkbcommon support
++  rng-none        dummy RNG, avoid using /dev/(u)random and getrandom()
+ 
+ NOTE: The object files are built at the place where configure is launched
+ EOF
+@@ -6599,6 +6605,7 @@ echo "libpmem support   $libpmem"
+ echo "libudev           $libudev"
+ echo "default devices   $default_devices"
+ echo "plugin support    $plugins"
++echo "rng-none          $rng_none"
+ 
+ if test "$supported_cpu" = "no"; then
+     echo
+@@ -7543,6 +7550,10 @@ if test "$edk2_blobs" = "yes" ; then
+   echo "DECOMPRESS_EDK2_BLOBS=y" >> $config_host_mak
+ fi
+ 
++if test "$rng_none" = "yes"; then
++  echo "CONFIG_RNG_NONE=y" >> $config_host_mak
++fi
++
+ # use included Linux headers
+ if test "$linux" = "yes" ; then
+   mkdir -p linux-headers
+diff --git a/crypto/Makefile.objs b/crypto/Makefile.objs
+index cdb01f9de9..b0d9eeaf96 100644
+--- a/crypto/Makefile.objs
++++ b/crypto/Makefile.objs
+@@ -21,7 +21,8 @@ crypto-obj-y += tlssession.o
+ crypto-obj-y += secret.o
+ crypto-rng-obj-$(CONFIG_GCRYPT) += random-gcrypt.o
+ crypto-rng-obj-$(if $(CONFIG_GCRYPT),n,$(CONFIG_GNUTLS)) += random-gnutls.o
+-crypto-rng-obj-$(if $(CONFIG_GCRYPT),n,$(if $(CONFIG_GNUTLS),n,y)) += random-platform.o
++crypto-rng-obj-$(if $(CONFIG_GCRYPT),n,$(if $(CONFIG_GNUTLS),n,$(CONFIG_RNG_NONE))) += random-none.o
++crypto-rng-obj-$(if $(CONFIG_GCRYPT),n,$(if $(CONFIG_GNUTLS),n,$(if $(CONFIG_RNG_NONE),n,y))) += random-platform.o
+ crypto-obj-y += $(crypto-rng-obj-y)
+ crypto-obj-y += pbkdf.o
+ crypto-obj-$(CONFIG_NETTLE) += pbkdf-nettle.o
+diff --git a/crypto/random-none.c b/crypto/random-none.c
+new file mode 100644
+index 0000000000..102f8a4dce
+--- /dev/null
++++ b/crypto/random-none.c
+@@ -0,0 +1,38 @@
++/*
++ * QEMU Crypto "none" random number provider
++ *
++ * Copyright (c) 2020 Marek Marczykowski-Górecki
++ *                      <marmarek@invisiblethingslab.com>
++ *
++ * This library is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * This library is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with this library; if not, see <http://www.gnu.org/licenses/>.
++ *
++ */
++
++#include "qemu/osdep.h"
++
++#include "crypto/random.h"
++#include "qapi/error.h"
++
++int qcrypto_random_init(Error **errp)
++{
++    return 0;
++}
++
++int qcrypto_random_bytes(void *buf,
++                         size_t buflen,
++                         Error **errp)
++{
++    error_setg(errp, "Random bytes not available with \"none\" rng");
++    return -1;
++}
+-- 
+2.21.1
+

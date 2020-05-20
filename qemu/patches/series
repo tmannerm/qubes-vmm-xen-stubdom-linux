@@ -10,3 +10,4 @@ stubdom-pci-addr-fix.patch
 pci-fix-emu-mask.patch
 additional-seccomp-filters.patch
 suppress_vmdesc.patch
+crypto-add-none-random-provider.patch

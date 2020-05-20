@@ -152,6 +152,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-qed \
 		--disable-sheepdog \
 		--disable-auth-pam \
+		--enable-rng-none \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
 		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack" \
