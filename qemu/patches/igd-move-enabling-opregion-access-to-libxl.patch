@@ -1,0 +1,39 @@
+From 70f08d2ed09811e195738a11f0abd97c1c685e5f Mon Sep 17 00:00:00 2001
+From: Grzegorz Uriasz <gorbak25@gmail.com>
+Date: Wed, 29 Apr 2020 10:08:16 +0000
+Subject: IGD move enabling opregion access to libxl
+
+Qemu running in stubdom does not have permissions to enable access the host opregions - remove assigning of permissions - this should be handled by libxl.
+
+Signed-off-by: Grzegorz Uriasz <gorbak25@gmail.com>
+---
+ hw/xen/xen_pt_graphics.c | 13 -------------
+ 1 file changed, 13 deletions(-)
+
+diff --git a/hw/xen/xen_pt_graphics.c b/hw/xen/xen_pt_graphics.c
+index 7d46e9c209..303674365b 100644
+--- a/hw/xen/xen_pt_graphics.c
++++ b/hw/xen/xen_pt_graphics.c
+@@ -283,19 +283,6 @@ void igd_write_opregion(XenPCIPassthroughState *s, uint32_t val)
+     igd_guest_opregion = (unsigned long)(val & ~XEN_PCI_INTEL_OPREGION_MASK)
+                             | (igd_host_opregion & XEN_PCI_INTEL_OPREGION_MASK);
+ 
+-    ret = xc_domain_iomem_permission(xen_xc, xen_domid,
+-            (unsigned long)(igd_host_opregion >> XC_PAGE_SHIFT),
+-            XEN_PCI_INTEL_OPREGION_PAGES,
+-            XEN_PCI_INTEL_OPREGION_ENABLE_ACCESSED);
+-
+-    if (ret) {
+-        XEN_PT_ERR(&s->dev, "[%d]:Can't enable to access IGD host opregion:"
+-                    " 0x%lx.\n", ret,
+-                    (unsigned long)(igd_host_opregion >> XC_PAGE_SHIFT)),
+-        igd_guest_opregion = 0;
+-        return;
+-    }
+-
+     ret = xc_domain_memory_mapping(xen_xc, xen_domid,
+             (unsigned long)(igd_guest_opregion >> XC_PAGE_SHIFT),
+             (unsigned long)(igd_host_opregion >> XC_PAGE_SHIFT),
+-- 
+2.26.1
+
