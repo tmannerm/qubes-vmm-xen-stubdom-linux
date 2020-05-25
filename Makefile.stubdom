@@ -119,7 +119,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-coroutine-pool \
 		--disable-glusterfs \
 		--disable-tpm \
-		--disable-libssh2 \
+		--disable-libssh \
 		--disable-numa \
 		--disable-tcmalloc \
 		--disable-jemalloc \
@@ -142,6 +142,17 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-vxhs \
 		--disable-vhost-user \
 		--disable-vhost-crypto \
+		--disable-vdi \
+		--disable-bochs \
+		--disable-cloop \
+		--disable-dmg \
+		--disable-qcow1 \
+		--disable-parallels \
+		--disable-vvfat \
+		--disable-qed \
+		--disable-sheepdog \
+		--disable-auth-pam \
+		--enable-rng-none \
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
 		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack" \
