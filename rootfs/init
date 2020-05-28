@@ -18,6 +18,15 @@ vm_path=$(xenstore-read "/local/domain/$domid/vm")
 # NUL well
 dm_args=$(xenstore-read $(xenstore-list -p "$vm_path/image/dmargs"|sort))
 
+# add audiodev conf to cmdline and run pulseaudio 
+if echo "$dm_args" | grep -q '^-soundhw'; then
+    export XDG_CONFIG_HOME='/tmp'
+    pa_args=$'-audiodev\npa,id=qemupa,server=unix:/tmp/pa.sock,timer-period=1000';
+    pulseaudio --use-pid-file=no --daemonize=no --exit-idle-time=-1 --disable-shm=yes -n \
+	-L "module-native-protocol-unix auth-anonymous=1 socket=/tmp/pa.sock" \
+	-L "module-vchan-sink domid=0" &
+fi
+
 # Extract network parameters and remove them from dm_args
 net_args=$(echo "$dm_args" | sed -n '/^-qubes-net:/p')
 dm_args=$(echo "$dm_args" | sed '/^-qubes-net:/d')
@@ -133,7 +142,7 @@ set -f
 qemu -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -chardev pipe,path=/tmp/qmp/qemu,id=m -mon chardev=m,mode=control \
 -chardev socket,server,nowait,path=/tmp/qemu.qmp,id=m2 -mon chardev=m2,mode=control \
-    $dm_args $kernel &
+    $dm_args $pa_args $kernel &
 set +f
 unset IFS
 
