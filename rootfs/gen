@@ -55,6 +55,11 @@ do
     ln -s busybox "$rootfs_dir/bin/$i"
 done
 
+mkdir -p "$rootfs_dir"/lib
+cp build/padist/lib/pulseaudio/*.so "$rootfs_dir/lib"
+cp -P build/padist/lib/*.so* "$rootfs_dir/lib"
+inst build/padist/usr/local/bin/pulseaudio /bin/pulseaudio
+
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
 inst build/qemu/install/bin/qemu-system-i386 /bin/qemu
 inst build/qemu/pc-bios/optionrom/linuxboot.bin /share/qemu/linuxboot.bin
