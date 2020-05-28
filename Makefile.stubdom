@@ -47,6 +47,88 @@ build/busybox/busybox: build/busybox/config.status
 	strip --strip-unneeded build/busybox/busybox_unstripped
 	mv build/busybox/busybox_unstripped build/busybox/busybox
 
+PULSEAUDIO_PATCHES := $(shell $Q -l pulseaudio)
+
+build/pulseaudio/.extracted: pulseaudio-$(PULSEAUDIO_VERSION).tar.xz
+	rm -rf build/pulseaudio
+	mkdir -p build/pulseaudio
+	tar -C build/pulseaudio --strip-components=1 -xf $<
+	touch $@
+
+build/pulseaudio/src/modules/module-vchan-sink.c: build/pulseaudio/.extracted
+	cp pulseaudio/gui-agent/pulse/*vchan-sink* build/pulseaudio/src/modules/
+
+build/pulseaudio/.patched: build/pulseaudio/.extracted pulseaudio/patches/series $(PULSEAUDIO_PATCHES)
+	$Q -C build/pulseaudio -. pop -a
+	rm -rf build/pulseaudio/.patches
+	cp -aL pulseaudio/patches build/pulseaudio/.patches
+	$Q -C build/pulseaudio -. push -a
+	touch $@
+
+build/pulseaudio/config.status: build/pulseaudio/.patched  build/pulseaudio/src/modules/module-vchan-sink.c
+	cd build/pulseaudio && ./configure \
+		--disable-silent-rules \
+		--disable-static \
+		--disable-static-bins \
+		--disable-rpath \
+		--disable-oss-output \
+		--disable-coreaudio-output \
+		--disable-jack \
+		--disable-nls \
+		--disable-lirc \
+		--disable-tcpwrap \
+		--disable-bluez5 \
+		--disable-gconf \
+		--disable-gsettings \
+		--disable-neon-opt \
+		--disable-webrtc-aec \
+		--disable-systemd-daemon \
+		--disable-dbus \
+		--disable-gtk3 \
+		--disable-alsa \
+		--disable-esound \
+		--disable-largefile \
+		--disable-x11 \
+		--disable-oss-wrapper \
+		--without-caps \
+		--with-database=simple \
+		--without-fftw \
+		--without-speex \
+		--without-soxr \
+		--disable-manpages \
+		--disable-per-user-esound-socket \
+		--disable-gstreamer \
+		--disable-systemd-journal \
+		--disable-systemd-login \
+		--disable-systemd-daemon \
+		--disable-openssl \
+		--disable-udev \
+		--disable-ipv6 \
+		--disable-hal-compat \
+		--disable-tcpwrap \
+		--disable-asyncns \
+		--disable-waveout \
+		--disable-memfd \
+		--disable-tests \
+		--disable-glib2 \
+		--with-module-dir=/lib \
+		--libdir=/lib \
+		ac_cv_header_locale_h=no \
+		ac_cv_func_strtod_l=no \
+		ac_cv_header_langinfo_h=no \
+		ac_cv_func_shm_open=no \
+		ac_cv_func_fork=no \
+		ac_cv_func_getaddrinfo=no \
+		ac_cv_func_getuid=no \
+		ac_cv_func_seteuid=no \
+		ac_cv_func_setresuid=no \
+		ac_cv_func_setreuid=no \
+		ac_cv_header_pwd_h=no \
+		ac_cv_header_grp_h=no
+
+build/padist/usr/bin/pulseaudio: build/pulseaudio/config.status
+	$(MAKE) install-strip -C build/pulseaudio DESTDIR=$(shell pwd)/build/padist
+
 QEMU_PATCHES := $(shell $Q -l qemu)
 
 build/qemu/.extracted: qemu-$(QEMU_VERSION).tar.xz
