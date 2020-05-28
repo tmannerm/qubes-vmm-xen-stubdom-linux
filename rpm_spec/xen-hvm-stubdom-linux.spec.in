@@ -1,6 +1,7 @@
 %define QEMU_VERSION 4.2.0
 %define LINUX_VERSION 5.4.30
 %define BUSYBOX_VERSION 1.31.1
+%define PULSEAUDIO_VERSION 13.99.1
 
 Name: xen-hvm-stubdom-linux
 Version: @VERSION@
@@ -26,6 +27,12 @@ BuildRequires: edk2-tools
 BuildRequires: libtool
 BuildRequires: libseccomp-devel
 BuildRequires: pixman-devel
+
+# pulseaudio
+BuildRequires: gettext-devel
+BuildRequires: libtool-ltdl-devel
+BuildRequires: libsndfile-devel
+BuildRequires: m4
 
 # QEMU Qubes gui-agent
 BuildRequires: qubes-gui-common-devel
@@ -59,6 +66,7 @@ Source0: %{name}-%{version}.tar.gz
 Source1: linux-%{LINUX_VERSION}.tar.xz
 Source2: qemu-%{QEMU_VERSION}.tar.xz
 Source3: busybox-%{BUSYBOX_VERSION}.tar.bz2
+Source4: pulseaudio-%{PULSEAUDIO_VERSION}.tar.xz
 
 %define debug_package %{nil}
 
@@ -69,7 +77,7 @@ stubdom.
 
 %prep
 %setup -q
-cp %{SOURCE1} %{SOURCE2} %{SOURCE3} .
+cp %{SOURCE1} %{SOURCE2} %{SOURCE3} %{SOURCE4} .
 
 
 %build
