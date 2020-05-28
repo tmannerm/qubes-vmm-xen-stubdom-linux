@@ -152,7 +152,9 @@ build/qemu/.gui-agent-copied-in: build/qemu/.extracted $(QEMU_GUI_AGENT_FILES)
 	cp -a qemu/gui-agent build/qemu/
 	touch $@
 
-build/qemu/config.status: build/qemu/.patched
+export QEMU_PKG_CONFIG_FLAGS=--with-path=$(shell pwd)/build/padist/lib/pkgconfig
+
+build/qemu/config.status: build/qemu/.patched build/padist/usr/bin/pulseaudio
 	cd build/qemu && ./configure \
 		--target-list=i386-softmmu \
 		--enable-xen \
@@ -170,7 +172,7 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-vhost-net \
 		--disable-spice \
 		--disable-guest-agent \
-		--audio-drv-list= \
+		--audio-drv-list=pa \
 		--disable-smartcard \
 		--disable-vnc \
 		--disable-spice \
@@ -236,9 +238,9 @@ build/qemu/config.status: build/qemu/.patched
 		--disable-auth-pam \
 		--enable-rng-none \
 		--cxx=/non-existent \
-		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1" \
-		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack" \
-		--prefix=
+		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1 -I$(shell pwd)/build/padist/usr/local/include" \
+		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack -Wl,-rpath-link,$(shell pwd)/build/padist/lib/pulseaudio -L$(shell pwd)/build/padist/lib" \
+		--prefix= 
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
 	$(MAKE) -C build/qemu/roms seavgabios-{cirrus,stdvga}
