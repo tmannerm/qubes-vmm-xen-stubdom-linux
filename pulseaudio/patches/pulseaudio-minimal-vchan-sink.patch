@@ -1,0 +1,18 @@
+--- a/src/Makefile.am	2019-12-16 10:08:27.000000000 +0300
++++ b/src/Makefile.am	2020-05-27 16:19:57.109458668 +0300
+@@ -2301,3 +2301,15 @@ coverage:
+ endif
+ 
+ .PHONY: massif update-all update-ffmpeg update-map-file coverage
++
++# vchan sink module
++module_vchan_sink_la_SOURCES = modules/module-vchan-sink.c
++module_vchan_sink_la_LDFLAGS = $(MODULE_LDFLAGS) -lvchan-xen 
++module_vchan_sink_la_LIBADD = $(MODULE_LIBADD)
++module_vchan_sink_la_CFLAGS = $(AM_CFLAGS) -I/usr/include/vchan-xen -DPA_MODULE_NAME=module_vchan_sink -Dfoomodulepipecustomsymdeffoo
++
++modlibexec_LTLIBRARIES = libprotocol-native.la \
++                         module-native-protocol-unix.la \
++			 module-vchan-sink.la
++bin_PROGRAMS = pulseaudio pacat pactl
++lib_LTLIBRARIES = libpulse.la
