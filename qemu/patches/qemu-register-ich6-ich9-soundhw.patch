@@ -1,17 +1,5 @@
 --- a/hw/audio/intel-hda.c	2019-12-12 21:20:47.000000000 +0300
-+++ b/hw/audio/intel-hda.c	2020-05-28 22:01:45.919599285 +0300
-@@ -1303,9 +1303,9 @@ static const TypeInfo hda_codec_device_t
- 
- /*
-  * create intel hda controller with codec attached to it,
-- * so '-soundhw hda' works.
-+ * so '-soundhw ich6' works.
-  */
--static int intel_hda_and_codec_init(PCIBus *bus)
-+static int intel_ich6_and_codec_init(PCIBus *bus)
- {
-     DeviceState *controller;
-     BusState *hdabus;
++++ b/hw/audio/intel-hda.c	2020-05-30 23:37:49.243703883 +0300
 @@ -1318,6 +1318,19 @@ static int intel_hda_and_codec_init(PCIB
      return 0;
  }
@@ -32,24 +20,23 @@
  static void intel_hda_register_types(void)
  {
      type_register_static(&hda_codec_bus_info);
-@@ -1325,7 +1338,8 @@ static void intel_hda_register_types(voi
-     type_register_static(&intel_hda_info_ich6);
+@@ -1326,6 +1339,8 @@ static void intel_hda_register_types(voi
      type_register_static(&intel_hda_info_ich9);
      type_register_static(&hda_codec_device_type_info);
--    pci_register_soundhw("hda", "Intel HD Audio", intel_hda_and_codec_init);
-+    pci_register_soundhw("ich6", "ich6 Intel HD Audio", intel_ich6_and_codec_init);
+     pci_register_soundhw("hda", "Intel HD Audio", intel_hda_and_codec_init);
++    pci_register_soundhw("ich6", "ich6 Intel HD Audio", intel_hda_and_codec_init);
 +    pci_register_soundhw("ich9", "ich9 Intel HD Audio", intel_ich9_and_codec_init);
  }
  
  type_init(intel_hda_register_types)
 --- a/hw/audio/soundhw.c	2019-12-12 21:20:47.000000000 +0300
-+++ b/hw/audio/soundhw.c	2020-05-28 22:20:13.893660658 +0300
++++ b/hw/audio/soundhw.c	2020-05-30 23:35:24.126052726 +0300
 @@ -40,7 +40,7 @@ struct soundhw {
      } init;
  };
  
 -static struct soundhw soundhw[9];
-+static struct soundhw soundhw[10];
++static struct soundhw soundhw[11];
  static int soundhw_count;
  
  void isa_register_soundhw(const char *name, const char *descr,
