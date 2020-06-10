@@ -55,9 +55,11 @@ do
     ln -s busybox "$rootfs_dir/bin/$i"
 done
 
-mkdir -p "$rootfs_dir"/lib
-cp build/padist/lib/pulseaudio/*.so "$rootfs_dir/lib"
-cp -P build/padist/lib/*.so* "$rootfs_dir/lib"
+if [ -n "$LD_LIBRARY_PATH" ]; then
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$PWD/build/padist/lib:$PWD/build/padist/lib/pulseaudio"
+else
+    export LD_LIBRARY_PATH="$PWD/build/padist/lib:$PWD/build/padist/lib/pulseaudio"
+fi
 inst build/padist/usr/local/bin/pulseaudio /bin/pulseaudio
 
 make DESTDIR="$PWD/build/qemu/install" -C build/qemu install
@@ -88,15 +90,17 @@ inst "rootfs/qemu-ifdown" "/etc/qemu-ifdown"
 inst "rootfs/init" "/init"
 
 mkdir $rootfs_dir/lib.new
-(find $rootfs_dir/{,usr/,usr/local/}lib{,64} -type f -print0 || true) | xargs -0 mv -t $rootfs_dir/lib.new/
+(find $rootfs_dir/{,usr/,usr/local/}lib{,64} -type f -print0 || true) | xargs -0r mv -t $rootfs_dir/lib.new/
 rm -rf $rootfs_dir/{,usr/,usr/local/}lib{,64}
 IFS=:
 for d in $LD_LIBRARY_PATH; do
-(find $rootfs_dir/$d -type f -print0 || true) | xargs -0 mv -t $rootfs_dir/lib.new/
+(find $rootfs_dir/$d -type f -print0 || true) | xargs -0r mv -t $rootfs_dir/lib.new/
 rm -rf $rootfs_dir/$d
 done
 unset IFS
 mv $rootfs_dir/lib{.new,}
+# possible leftovers from local $LD_LIBRARY_PATH + dracut-install
+rm -rf "$rootfs_dir/home"
 touch $rootfs_dir/etc/ld.so.conf
 /sbin/ldconfig -r $rootfs_dir /lib
 ln -s lib $rootfs_dir/lib64
