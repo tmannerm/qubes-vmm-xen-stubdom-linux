@@ -16,7 +16,7 @@ domid=$(/bin/xenstore-read "target")
 vm_path=$(xenstore-read "/local/domain/$domid/vm")
 # convert multiple keys into \n separated arguments, as shell doesn't handle
 # NUL well
-dm_args=$(xenstore-read $(xenstore-list -p "$vm_path/image/dmargs"|sort))
+dm_args=$(xenstore-read $(xenstore-list -p "$vm_path/image/dm-argv"|sort))
 
 # add audiodev conf to cmdline and run pulseaudio 
 audio_model=$(echo "$dm_args" | sed -n '/^-soundhw/ {n;p}')
@@ -128,6 +128,10 @@ while read -r line; do
     fi
 done < /proc/kmsg
 ) &
+
+# replace $STUBDOM_RESTORE_INCOMING_ARG with argument for incoming state - if
+# applicable
+dm_args=$(echo "$dm_args" | sed 's/\$STUBDOM_RESTORE_INCOMING_ARG/fd:3/')
 
 # setup FD 3 and 4 for migration stream (incoming, outgoing), actual qemu
 # options are controlled by the toolstack

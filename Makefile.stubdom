@@ -280,8 +280,8 @@ $(ROOTFS_IMG): rootfs/gen $(STUBDOM_DISK_FILE)
 	env -u MAKELEVEL -u MAKEFLAGS -u MFLAGS ./$<
 
 install: $(VMLINUZ) $(ROOTFS_IMG)
-	install -D -m 444 $(VMLINUZ) $(DESTDIR)$(STUBDOM_BINDIR)/stubdom-linux-kernel
-	install -m 444 $(ROOTFS_IMG) $(DESTDIR)$(STUBDOM_BINDIR)/
+	install -D -m 444 $(VMLINUZ) $(DESTDIR)$(STUBDOM_BINDIR)/qemu-stubdom-linux-kernel
+	install -D -m 444 $(ROOTFS_IMG) $(DESTDIR)$(STUBDOM_BINDIR)/qemu-stubdom-linux-rootfs
 
 clean:
 	rm -rf build

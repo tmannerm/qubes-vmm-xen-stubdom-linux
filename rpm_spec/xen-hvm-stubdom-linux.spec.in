@@ -12,7 +12,7 @@ Group: System
 License: GPL
 URL: https://www.qubes-os.org/
 
-Requires: xen-libs >= 2001:4.12.0~rc1-0
+Requires: xen-libs >= 2001:4.14.0
 
 BuildRequires: quilt
 
@@ -89,8 +89,8 @@ make -f Makefile.stubdom DESTDIR=${RPM_BUILD_ROOT} STUBDOM_BINDIR=/usr/libexec/x
 
 
 %files
-/usr/libexec/xen/boot/stubdom-linux-rootfs
-/usr/libexec/xen/boot/stubdom-linux-kernel
+/usr/libexec/xen/boot/qemu-stubdom-linux-rootfs
+/usr/libexec/xen/boot/qemu-stubdom-linux-kernel
 
 
 %changelog
