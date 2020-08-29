@@ -155,14 +155,14 @@ qemu_pid=$!
 
 
 while [ ! -e /tmp/qemu.qmp ]; do sleep 0.1; done
-if [ -e /dev/fd/4 ]; then
+if [ -e /proc/self/fd/4 ]; then
     qmp_hello=$'{"execute":"qmp_capabilities","id":1}\r\n'
     qmp_addfd=$'{"execute":"add-fd", "arguments": { "fdset-id": 1 }, "id":42 }\r\n'
     add-fd /tmp/qemu.qmp /dev/fd/4 "$qmp_hello$qmp_addfd" "42"
     exec 4>&-
 fi
 
-if [ -e /dev/fd/3 ]; then
+if [ -e /proc/self/fd/3 ]; then
     exec 3<&-
 fi
 
