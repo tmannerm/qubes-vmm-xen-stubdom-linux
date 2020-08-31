@@ -12,3 +12,6 @@ additional-seccomp-filters.patch
 suppress_vmdesc.patch
 crypto-add-none-random-provider.patch
 qemu-register-ich6-ich9-soundhw.patch
+igd-fix-undefined-behaviour.patch
+igd-improve-legacy-vbios-handling.patch
+igd-move-enabling-opregion-access-to-libxl.patch

@@ -1,0 +1,152 @@
+From f913ed9b8678d6344e43ef7ef02e98994276b0e1 Mon Sep 17 00:00:00 2001
+From: Grzegorz Uriasz <gorbak25@gmail.com>
+Date: Thu, 16 Apr 2020 00:26:22 +0200
+Subject: IGD improve legacy vbios handling
+
+The current method of getting the vbios is broken - it just isn't working on any device I've tested - the reason
+for this is explained in the previous patch. The vbios is polymorphic and getting a proper unmodified copy is
+often not possible without reverse engineering the firmware. We don't need an unmodified copy for most purposes -
+an unmodified copy is only needed for initializing the bios framebuffer and providing the bios with a corrupted
+copy of the rom won't do any damage as the bios will just ignore the rom.
+
+After the i915 driver takes over the vbios is only needed for reading some metadata/configuration stuff etc...
+I've tested that not having any kind of vbios in the guest actually works fine but on older generations of IGD
+there are some slight hiccups. To maximize compatibility the best approach is to just copy the results of the vbios
+execution directly to the guest. It turns out the vbios is always present on an hardcoded memory range in a reserved
+memory range from real mode - all we need to do is to memcpy it into the guest.
+
+The following patch does 2 things:
+1) When pci_assign_dev_load_option_rom fails to read the vbios from sysfs(this works only when the igd is not the
+boot gpu - this is unlikely to happen) it falls back to using /dev/mem to copy the vbios directly to the guest.
+Using /dev/mem should be fine as there is more xen specific pci code which also relies on /dev/mem.
+2) When dealing with IGD in the more generic code we skip the allocation of the rom resource - the reason for this is to prevent
+a malicious guest from modifying the vbios in the host -> this is needed as someone might try to pwn the i915 driver in the host by doing so
+(attach igd to guest, guest modifies vbios, the guest is terminated and the idg is reattached to the host, i915 driver in the host uses data from the modified vbios).
+This is also needed to not overwrite the proper shadow copy made before.
+
+I've tested this patch and it works fine - the guest isn't complaining about the missing vbios tables and the pci config
+space in the guest looks fine.
+
+Signed-off-by: Grzegorz Uriasz <gorbak25@gmail.com>
+---
+ hw/xen/xen_pt.c          |  8 +++++--
+ hw/xen/xen_pt_graphics.c | 48 +++++++++++++++++++++++++++++++++++++---
+ hw/xen/xen_pt_load_rom.c |  2 +-
+ 3 files changed, 52 insertions(+), 6 deletions(-)
+
+diff --git a/hw/xen/xen_pt.c b/hw/xen/xen_pt.c
+index a1706181cc..4c9618ea3a 100644
+--- a/hw/xen/xen_pt.c
++++ b/hw/xen/xen_pt.c
+@@ -483,8 +483,12 @@ static int xen_pt_register_regions(XenPCIPassthroughState *s, uint16_t *cmd)
+                    i, r_size, r->base_addr, type);
+     }
+ 
+-    /* Register expansion ROM address */
+-    if (d->rom.base_addr && d->rom.size) {
++    /*
++     * Register expansion ROM address. If we are dealing with a ROM
++     * shadow copy for legacy vga devices then don't bother to map it
++     * as previous code creates a proper shadow copy
++     */
++    if (d->rom.base_addr && d->rom.size && !(is_igd_vga_passthrough(d))) {
+         uint32_t bar_data = 0;
+ 
+         /* Re-set BAR reported by OS, otherwise ROM can't be read. */
+diff --git a/hw/xen/xen_pt_graphics.c b/hw/xen/xen_pt_graphics.c
+index 135c8df1e7..7d46e9c209 100644
+--- a/hw/xen/xen_pt_graphics.c
++++ b/hw/xen/xen_pt_graphics.c
+@@ -129,7 +129,7 @@ int xen_pt_unregister_vga_regions(XenHostPCIDevice *dev)
+     return 0;
+ }
+ 
+-static void *get_vgabios(XenPCIPassthroughState *s, int *size,
++static void *get_sysfs_vgabios(XenPCIPassthroughState *s, int *size,
+                        XenHostPCIDevice *dev)
+ {
+     return pci_assign_dev_load_option_rom(&s->dev, size,
+@@ -137,6 +137,45 @@ static void *get_vgabios(XenPCIPassthroughState *s, int *size,
+                                           dev->dev, dev->func);
+ }
+ 
++static void xen_pt_direct_vbios_copy(XenPCIPassthroughState *s, Error **errp)
++{
++    int fd = -1;
++    void *guest_bios = NULL;
++    void *host_vbios = NULL;
++    /* This is always 32 pages in the real mode reserved region */
++    int bios_size = 32 << XC_PAGE_SHIFT;
++    int vbios_addr = 0xc0000;
++
++    fd = open("/dev/mem", O_RDONLY);
++    if (fd == -1) {
++        error_setg(errp, "Can't open /dev/mem: %s", strerror(errno));
++        return;
++    }
++    host_vbios = mmap(NULL, bios_size,
++            PROT_READ, MAP_ANONYMOUS | MAP_PRIVATE, fd, vbios_addr);
++    close(fd);
++
++    if (host_vbios == MAP_FAILED) {
++        error_setg(errp, "Failed to mmap host vbios: %s", strerror(errno));
++        return;
++    }
++
++    memory_region_init_ram(&s->dev.rom, OBJECT(&s->dev),
++            "legacy_vbios.rom", bios_size, &error_abort);
++    guest_bios = memory_region_get_ram_ptr(&s->dev.rom);
++    memcpy(guest_bios, host_vbios, bios_size);
++
++    if (munmap(host_vbios, bios_size) == -1) {
++        XEN_PT_LOG(&s->dev, "Failed to unmap host vbios: %s\n", strerror(errno));
++    }
++
++    cpu_physical_memory_rw(vbios_addr, guest_bios, bios_size, 1);
++    memory_region_set_address(&s->dev.rom, vbios_addr);
++    pci_register_bar(&s->dev, PCI_ROM_SLOT, PCI_BASE_ADDRESS_SPACE_MEMORY, &s->dev.rom);
++    s->dev.has_rom = true;
++    XEN_PT_LOG(&s->dev, "Legacy VBIOS registered\n");
++}
++
+ /* Refer to Seabios. */
+ struct rom_header {
+     uint16_t signature;
+@@ -179,9 +218,11 @@ void xen_pt_setup_vga(XenPCIPassthroughState *s, XenHostPCIDevice *dev,
+         return;
+     }
+ 
+-    bios = get_vgabios(s, &bios_size, dev);
++    bios = get_sysfs_vgabios(s, &bios_size, dev);
+     if (!bios) {
+-        error_setg(errp, "VGA: Can't get VBIOS");
++        XEN_PT_LOG(&s->dev, "Unable to get host VBIOS from sysfs - "
++                            "falling back to a direct copy of memory ranges\n");
++        xen_pt_direct_vbios_copy(s, errp);
+         return;
+     }
+ 
+@@ -207,6 +248,7 @@ void xen_pt_setup_vga(XenPCIPassthroughState *s, XenHostPCIDevice *dev,
+ 
+     /* Currently we fixed this address as a primary for legacy BIOS. */
+     cpu_physical_memory_rw(0xc0000, bios, bios_size, 1);
++    XEN_PT_LOG(&s->dev, "Legacy VBIOS registered\n");
+ }
+ 
+ uint32_t igd_read_opregion(XenPCIPassthroughState *s)
+diff --git a/hw/xen/xen_pt_load_rom.c b/hw/xen/xen_pt_load_rom.c
+index e6f4592dff..3cde3a51ec 100644
+--- a/hw/xen/xen_pt_load_rom.c
++++ b/hw/xen/xen_pt_load_rom.c
+@@ -71,7 +71,7 @@ void *pci_assign_dev_load_option_rom(PCIDevice *dev,
+         goto close_rom;
+     }
+ 
+-    pci_register_bar(dev, PCI_ROM_SLOT, 0, &dev->rom);
++    pci_register_bar(dev, PCI_ROM_SLOT, PCI_BASE_ADDRESS_SPACE_MEMORY, &dev->rom);
+     dev->has_rom = true;
+     *size = st.st_size;
+ close_rom:
+-- 
+2.26.1
+

@@ -1,0 +1,74 @@
+From 9d93dc9ee9a80a01afec68fae7dd97d0b3b84b29 Mon Sep 17 00:00:00 2001
+From: Grzegorz Uriasz <gorbak25@gmail.com>
+Date: Wed, 15 Apr 2020 23:27:09 +0200
+Subject: IGD fix undefined behaviour
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch fixes qemu crashes when passing through an IGD device to HVM guests under XEN. The problem is that on almost every laptop
+reading the IGD ROM from SYSFS will fail, the reason for it is that the IGD rom is polymorphic and it modifies itself
+during bootup - this results in an invalid rom image - the kernel checks whether the image is valid and when that's not the case
+it won't allow userspace to read it. It seems that when the code was first written(xen_pt_load_rom.c) the kernel's back then didn't check
+whether the rom is valid and just passed the contents to userspace - because of this qemu also tries to repair the rom later in the code.
+When stating the rom the kernel isn't validating the rom contents so it is returning the proper size of the rom(32 4kb pages).
+
+This results in undefined behaviour - pci_assign_dev_load_option_rom is creating a buffer and then writes the size of the buffer to a pointer.
+In pci_assign_dev_load_option_rom under old kernels if the fstat would succeed then fread would also succeed - this means if the buffer
+is allocated the size of the buffer will be set. On newer kernels this is not the case - on all laptops I've tested(spanning a few
+generations of IGD) the fstat is successful and the buffer is allocated but the fread is failing - as the buffer is not deallocated
+the function is returning a valid pointer without setting the size of the buffer for the caller. The caller of pci_assign_dev_load_option_rom
+is holding the size of the buffer in an uninitialized variable and is just checking whether pci_assign_dev_load_option_rom returned a valid pointer.
+This later results in cpu_physical_memory_write(0xc0000, result_of_pci_assign_dev_load_option_rom, unitialized_variable) which
+depending on the compiler parameters, configure flags, etc... might crash qemu or might work - the xen 4.12 stable release with default configure
+parameters works but changing the compiler options slightly(for instance by enabling qemu debug) results in qemu crashing ¯\_(;-;)_/¯
+
+The only situation when the original pci_assign_dev_load_option_rom works is when the IDG is not the boot gpu - this won't happen on any laptop and
+will be rare on desktops.
+
+This patch deallocates the buffer and returns NULL if reading the VBIOS fails - the caller of the function then properly shuts down qemu.
+The next patch in the series introduces a better method for getting the vbios so qemu does not exit when pci_assign_dev_load_option_rom fails -
+this is the reason I've changed error_report to warn_report as whether a failure in pci_assign_dev_load_option_rom is fatal
+depends on the caller.
+
+Signed-off-by: Grzegorz Uriasz <gorbak25@gmail.com>
+---
+ hw/xen/xen_pt_load_rom.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
+
+diff --git a/hw/xen/xen_pt_load_rom.c b/hw/xen/xen_pt_load_rom.c
+index e6a86ca818..e6f4592dff 100644
+--- a/hw/xen/xen_pt_load_rom.c
++++ b/hw/xen/xen_pt_load_rom.c
+@@ -44,12 +44,12 @@ void *pci_assign_dev_load_option_rom(PCIDevice *dev,
+     fp = fopen(rom_file, "r+");
+     if (fp == NULL) {
+         if (errno != ENOENT) {
+-            error_report("pci-assign: Cannot open %s: %s", rom_file, strerror(errno));
++            warn_report("pci-assign: Cannot open %s: %s", rom_file, strerror(errno));
+         }
+         return NULL;
+     }
+     if (fstat(fileno(fp), &st) == -1) {
+-        error_report("pci-assign: Cannot stat %s: %s", rom_file, strerror(errno));
++        warn_report("pci-assign: Cannot stat %s: %s", rom_file, strerror(errno));
+         goto close_rom;
+     }
+ 
+@@ -65,10 +65,9 @@ void *pci_assign_dev_load_option_rom(PCIDevice *dev,
+     memset(ptr, 0xff, st.st_size);
+ 
+     if (!fread(ptr, 1, st.st_size, fp)) {
+-        error_report("pci-assign: Cannot read from host %s", rom_file);
+-        error_printf("Device option ROM contents are probably invalid "
+-                     "(check dmesg).\nSkip option ROM probe with rombar=0, "
+-                     "or load from file with romfile=\n");
++        warn_report("pci-assign: Cannot read from host %s", rom_file);
++        memory_region_unref(&dev->rom);
++        ptr = NULL;
+         goto close_rom;
+     }
+ 
+-- 
+2.26.1
+
