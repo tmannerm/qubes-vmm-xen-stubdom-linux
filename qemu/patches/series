@@ -15,4 +15,4 @@ qemu-register-ich6-ich9-soundhw.patch
 igd-fix-undefined-behaviour.patch
 igd-improve-legacy-vbios-handling.patch
 igd-move-enabling-opregion-access-to-libxl.patch
-seabios-python2.patch
+seabios-python3.patch
