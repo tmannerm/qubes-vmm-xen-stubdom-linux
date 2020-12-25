@@ -1,0 +1,13 @@
+diff --git a/roms/seabios/Makefile b/roms/seabios/Makefile
+index c20be15..995dc86 100644
+--- a/roms/seabios/Makefile
++++ b/roms/seabios/Makefile
+@@ -22,7 +22,7 @@ LD=$(CROSS_PREFIX)ld
+ OBJCOPY=$(CROSS_PREFIX)objcopy
+ OBJDUMP=$(CROSS_PREFIX)objdump
+ STRIP=$(CROSS_PREFIX)strip
+-PYTHON=python
++PYTHON=python2
+ CPP=cpp
+ IASL:=iasl
+ LD32BIT_FLAG:=-melf_i386

@@ -240,7 +240,8 @@ build/qemu/config.status: build/qemu/.patched build/padist/usr/bin/pulseaudio
 		--cxx=/non-existent \
 		--extra-cflags="-DXEN_PT_LOGGING_ENABLED=1 -I$(shell pwd)/build/padist/usr/local/include" \
 		--extra-ldflags="-Wl,-z,nodlopen -Wl,-z,nodump -Wl,-z,noexecstack -Wl,-rpath-link,$(shell pwd)/build/padist/lib/pulseaudio -L$(shell pwd)/build/padist/lib" \
-		--prefix= 
+		--python=/usr/bin/python3 \
+		--prefix=
 
 build/qemu/i386-softmmu/qemu-system-i386: build/qemu/.patched build/qemu/config.status build/qemu/.gui-agent-copied-in
 	$(MAKE) -C build/qemu/roms seavgabios-{cirrus,stdvga}
