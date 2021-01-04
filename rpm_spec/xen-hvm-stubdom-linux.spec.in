@@ -17,16 +17,21 @@ Requires: xen-libs >= 2001:4.14.0
 BuildRequires: quilt
 
 # QEMU
-BuildRequires: python
+BuildRequires: python3
 BuildRequires: zlib-devel
 BuildRequires: xen-devel
 BuildRequires: glib2-devel
 BuildRequires: autoconf
 BuildRequires: automake
+%if 0%{?rhel} >= 8
+BuildRequires: edk2-ovmf
+%else
 BuildRequires: edk2-tools
+%endif
 BuildRequires: libtool
 BuildRequires: libseccomp-devel
 BuildRequires: pixman-devel
+BuildRequires: hostname
 
 # pulseaudio
 BuildRequires: gettext-devel
@@ -52,6 +57,7 @@ BuildRequires: gcc-c++
 # Busybox
 BuildRequires: libselinux-devel >= 1.27.7-2
 BuildRequires: libsepol-devel
+BuildRequires: perl-Pod-Html
 
 # rootfs
 BuildRequires: xen-runtime >= 2001:4.8.2-10
